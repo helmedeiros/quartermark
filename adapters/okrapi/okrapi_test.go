@@ -1,0 +1,305 @@
+package okrapi_test
+
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/helmedeiros/quartermark/adapters/okrapi"
+	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr"
+	"github.com/helmedeiros/quartermark/org"
+	"github.com/helmedeiros/quartermark/storeerr"
+	"github.com/helmedeiros/quartermark/timewindow"
+)
+
+// fakeStore is an in-memory okr.Store. The module is meant to run against
+// any implementation of its narrow port, so its own tests should not need
+// the application's SQLite one.
+type fakeStore struct {
+	teams map[string]org.Team
+	blobs map[string][]byte
+}
+
+func newFakeStore() *fakeStore {
+	return &fakeStore{teams: map[string]org.Team{}, blobs: map[string][]byte{}}
+}
+
+func blobKey(teamSlug, section string) string { return teamSlug + "/" + section }
+
+func (f *fakeStore) GetTeamBlob(_ context.Context, teamSlug, section string) ([]byte, bool, error) {
+	b, ok := f.blobs[blobKey(teamSlug, section)]
+	return b, ok, nil
+}
+
+func (f *fakeStore) PutTeamBlob(_ context.Context, teamSlug, section string, data []byte) error {
+	f.blobs[blobKey(teamSlug, section)] = data
+	return nil
+}
+
+func (f *fakeStore) ListTeams(context.Context) ([]org.Team, error) {
+	out := make([]org.Team, 0, len(f.teams))
+	for _, t := range f.teams {
+		out = append(out, t)
+	}
+	return out, nil
+}
+
+func (f *fakeStore) GetTeam(_ context.Context, slug string) (org.Team, error) {
+	t, ok := f.teams[slug]
+	if !ok {
+		return org.Team{}, storeerr.ErrNotFound
+	}
+	return t, nil
+}
+
+func (f *fakeStore) CreateTeam(_ context.Context, t org.Team) error {
+	if _, exists := f.teams[t.Slug]; exists {
+		return storeerr.ErrAlreadyExists
+	}
+	f.teams[t.Slug] = t
+	return nil
+}
+
+// noJira is the normal state for a team that does OKRs without Jira.
+type noJira struct{}
+
+func (noJira) Jira(context.Context, string) (jirasource.Source, error) { return nil, nil }
+
+// mount builds exactly what a host application builds: a bare mux with
+// the module's routes on it and nothing else.
+func mount(t *testing.T, store okr.Store, resolver okrapi.JiraResolver) *httptest.Server {
+	t.Helper()
+	mux := http.NewServeMux()
+	okrapi.Mount(mux, store, resolver)
+	srv := httptest.NewServer(mux)
+	t.Cleanup(srv.Close)
+	return srv
+}
+
+func do(t *testing.T, srv *httptest.Server, method, path, body string) *http.Response {
+	t.Helper()
+	var r *http.Request
+	var err error
+	if body == "" {
+		r, err = http.NewRequest(method, srv.URL+path, nil)
+	} else {
+		r, err = http.NewRequest(method, srv.URL+path, strings.NewReader(body))
+		r.Header.Set("Content-Type", "application/json")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := http.DefaultClient.Do(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = resp.Body.Close() })
+	return resp
+}
+
+func TestMountServesTheTeamRegistry(t *testing.T) {
+	store := newFakeStore()
+	srv := mount(t, store, noJira{})
+
+	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`).StatusCode; got != http.StatusCreated {
+		t.Fatalf("POST /teams = %d, want 201", got)
+	}
+
+	resp := do(t, srv, http.MethodGet, "/teams", "")
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET /teams = %d", resp.StatusCode)
+	}
+	var teams []org.Team
+	if err := json.NewDecoder(resp.Body).Decode(&teams); err != nil {
+		t.Fatal(err)
+	}
+	if len(teams) != 1 || teams[0].Slug != "acme" {
+		t.Fatalf("teams = %+v", teams)
+	}
+}
+
+func TestCreatingTheSameTeamTwiceConflicts(t *testing.T) {
+	srv := mount(t, newFakeStore(), noJira{})
+	do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`)
+
+	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`).StatusCode; got != http.StatusConflict {
+		t.Fatalf("duplicate POST /teams = %d, want 409", got)
+	}
+}
+
+func TestTeamRequiresSlugAndName(t *testing.T) {
+	srv := mount(t, newFakeStore(), noJira{})
+	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme"}`).StatusCode; got != http.StatusBadRequest {
+		t.Fatalf("POST /teams without a name = %d, want 400", got)
+	}
+}
+
+func TestBlobRoundTripAndMissingSection(t *testing.T) {
+	srv := mount(t, newFakeStore(), noJira{})
+
+	if got := do(t, srv, http.MethodGet, "/teams/acme/blobs/routines", "").StatusCode; got != http.StatusNotFound {
+		t.Fatalf("GET of an absent section = %d, want 404", got)
+	}
+	if got := do(t, srv, http.MethodPut, "/teams/acme/blobs/routines", `{"hello":"world"}`).StatusCode; got != http.StatusNoContent {
+		t.Fatalf("PUT = %d, want 204", got)
+	}
+	resp := do(t, srv, http.MethodGet, "/teams/acme/blobs/routines", "")
+	var got map[string]string
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if got["hello"] != "world" {
+		t.Fatalf("round-trip lost the body: %+v", got)
+	}
+}
+
+func TestOkrsBlobIsStampedOnWrite(t *testing.T) {
+	store := newFakeStore()
+	srv := mount(t, store, noJira{})
+
+	do(t, srv, http.MethodPut, "/teams/acme/blobs/okrs", `{"team":"Acme","quarters":[]}`)
+
+	stored := store.blobs[blobKey("acme", "okrs")]
+	if v := okr.BlobVersion(stored); v != okr.SchemaVersion {
+		t.Fatalf("stored version = %d, want %d", v, okr.SchemaVersion)
+	}
+}
+
+func TestFutureVersionOkrsBlobConflicts(t *testing.T) {
+	srv := mount(t, newFakeStore(), noJira{})
+	body := `{"schemaVersion":9999,"quarters":[]}`
+	if got := do(t, srv, http.MethodPut, "/teams/acme/blobs/okrs", body).StatusCode; got != http.StatusConflict {
+		t.Fatalf("PUT of a future-version blob = %d, want 409", got)
+	}
+}
+
+func TestSettingsExposesTheJiraHostButNotTheToken(t *testing.T) {
+	store := newFakeStore()
+	store.blobs[blobKey("acme", "connectors")] = []byte(
+		`{"jira":{"baseUrl":"https://example.atlassian.net","email":"bot@example.com","token":"secret-token"}}`)
+	srv := mount(t, store, noJira{})
+
+	resp := do(t, srv, http.MethodGet, "/teams/acme/okr-settings", "")
+	var got okrapi.Settings
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if got.JiraBaseURL != "https://example.atlassian.net" {
+		t.Fatalf("jiraBaseUrl = %q", got.JiraBaseURL)
+	}
+	// The struct has no token field, so decoding cannot prove absence —
+	// check the wire bytes instead.
+	store.blobs[blobKey("acme", "connectors")] = []byte(
+		`{"jira":{"baseUrl":"https://example.atlassian.net","token":"secret-token"}}`)
+	raw := do(t, srv, http.MethodGet, "/teams/acme/okr-settings", "")
+	buf := make([]byte, 512)
+	n, _ := raw.Body.Read(buf)
+	if strings.Contains(string(buf[:n]), "secret-token") {
+		t.Fatalf("the token reached the wire: %s", buf[:n])
+	}
+}
+
+// A team with no Jira connector is a normal state, not a failure — but a
+// refresh it cannot perform must say so rather than pretend it worked.
+func TestJiraRoutesReportUnconfiguredRatherThanFailing(t *testing.T) {
+	srv := mount(t, newFakeStore(), noJira{})
+
+	for _, tc := range []struct{ method, path string }{
+		{http.MethodPost, "/teams/acme/okrs/jira-refresh"},
+		{http.MethodGet, "/teams/acme/okrs/jira-search?q=PROJ"},
+	} {
+		if got := do(t, srv, tc.method, tc.path, "").StatusCode; got != http.StatusServiceUnavailable {
+			t.Fatalf("%s %s = %d, want 503", tc.method, tc.path, got)
+		}
+	}
+}
+
+// stubJira answers the two calls a quarter refresh makes.
+type stubJira struct{ issues map[string]jirasource.Issue }
+
+func (s stubJira) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]jirasource.Issue, error) {
+	return nil, nil
+}
+
+func (s stubJira) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasource.Issue, error) {
+	out := make([]jirasource.Issue, 0, len(keys))
+	for _, k := range keys {
+		if issue, ok := s.issues[k]; ok {
+			out = append(out, issue)
+		}
+	}
+	return out, nil
+}
+
+func (s stubJira) GetChildIssues(context.Context, string) ([]jirasource.ChildIssue, error) {
+	return nil, nil
+}
+
+func (s stubJira) SearchIssuesByText(_ context.Context, _ string, _ int) ([]jirasource.IssueSummary, error) {
+	return []jirasource.IssueSummary{{Key: "PROJ-1", Summary: "Ship it", IssueType: "Epic"}}, nil
+}
+
+type withJira struct{ jira jirasource.Source }
+
+func (w withJira) Jira(context.Context, string) (jirasource.Source, error) { return w.jira, nil }
+
+func TestJiraRefreshWritesProgressBackIntoTheBlob(t *testing.T) {
+	store := newFakeStore()
+	store.blobs[blobKey("acme", "okrs")] = []byte(`{"team":"Acme","quarters":[
+		{"quarterId":"2026-q3","objectives":[{"id":"O-1","jiraKeys":["PROJ-1"]}]}
+	]}`)
+	jira := stubJira{issues: map[string]jirasource.Issue{
+		"PROJ-1": {Key: "PROJ-1", IssueType: "Epic", Status: "Done", StatusCategory: "done", Summary: "Ship it"},
+	}}
+	srv := mount(t, store, withJira{jira: jira})
+
+	resp := do(t, srv, http.MethodPost, "/teams/acme/okrs/jira-refresh", `{"force":true}`)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("jira-refresh = %d, want 200", resp.StatusCode)
+	}
+	var result struct {
+		RefreshedQuarters []string `json:"refreshedQuarters"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+	if len(result.RefreshedQuarters) != 1 || result.RefreshedQuarters[0] != "2026-q3" {
+		t.Fatalf("refreshedQuarters = %+v", result.RefreshedQuarters)
+	}
+
+	stored := string(store.blobs[blobKey("acme", "okrs")])
+	if !strings.Contains(stored, "jiraRefreshedAt") {
+		t.Fatalf("refresh timestamp was not persisted: %s", stored)
+	}
+	// Refreshing must also bring the blob up to the current schema —
+	// otherwise a live refresh could rewrite an unversioned blob and
+	// silently drop the anchor back to version 0.
+	if v := okr.BlobVersion(store.blobs[blobKey("acme", "okrs")]); v != okr.SchemaVersion {
+		t.Fatalf("version after refresh = %d, want %d", v, okr.SchemaVersion)
+	}
+}
+
+func TestJiraSearchReturnsMatches(t *testing.T) {
+	srv := mount(t, newFakeStore(), withJira{jira: stubJira{}})
+
+	resp := do(t, srv, http.MethodGet, "/teams/acme/okrs/jira-search?q=PROJ", "")
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("jira-search = %d", resp.StatusCode)
+	}
+	body := make([]byte, 512)
+	n, _ := resp.Body.Read(body)
+	if !strings.Contains(string(body[:n]), "PROJ-1") {
+		t.Fatalf("search result missing the match: %s", body[:n])
+	}
+}
+
+func TestJiraRefreshOnAnAbsentBlobIsNotFound(t *testing.T) {
+	srv := mount(t, newFakeStore(), withJira{jira: stubJira{}})
+	if got := do(t, srv, http.MethodPost, "/teams/acme/okrs/jira-refresh", `{}`).StatusCode; got != http.StatusNotFound {
+		t.Fatalf("refresh with no okrs blob = %d, want 404", got)
+	}
+}
