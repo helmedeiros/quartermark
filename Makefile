@@ -1,4 +1,4 @@
-.PHONY: build test check fmt vet lint run
+.PHONY: build test check fmt vet run demo web-install web-test
 
 build:
 	go build ./...
@@ -19,3 +19,15 @@ check: vet test
 
 run:
 	go run ./cmd/okrd
+
+# A worked example in a throwaway database, so there is something to look
+# at before you have typed anything in. Refuses to touch a database that
+# already has teams.
+demo:
+	QUARTERMARK_DB=demo.db go run ./cmd/okrd -demo
+
+web-install:
+	cd web && npm install
+
+web-test:
+	cd web && npm run typecheck && npm run lint && npm test && npm run build

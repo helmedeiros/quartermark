@@ -8,9 +8,29 @@ result → milestone — on a quarter timeline, tells you when the plan needs mo
 engineers than you have, and reads progress back out of Jira so the number
 isn't something a human has to remember to type.
 
-> **Status: pre-release scaffold.** The name, module path and license are
-> settled; the implementation is being extracted from a private codebase and
-> has not landed yet. Nothing here is usable today.
+> **Status: early.** The Go API and the React frontend both run, and there
+> is a demo dataset to look at. It has not been packaged, versioned or
+> deployed anywhere yet.
+
+## See it working
+
+No account, no setup, no data of your own:
+
+```
+make demo                      # API on :8770, loads a worked example
+cd web && npm install && npm run dev
+```
+
+Then open `http://127.0.0.1:5173/t/atlas/okrs`.
+
+You get a fictional team, Atlas, with three quarters: one finished and
+locked, one in flight with progress part-way through, and one still a
+sketch. Enough to see the tree, the quarter timeline, the capacity
+warning and the spreadsheet export before deciding whether to put your
+own quarter in.
+
+`make demo` only ever writes into a database with no teams in it. Point
+it at one that has them and it declines rather than overwriting.
 
 ## What it does
 

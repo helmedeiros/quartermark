@@ -8,6 +8,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -28,19 +29,26 @@ const (
 func main() {
 	addr := flag.String("addr", envOr("QUARTERMARK_ADDR", defaultAddr), "address to listen on")
 	dbPath := flag.String("db", envOr("QUARTERMARK_DB", defaultDB), "path to the SQLite database")
+	demo := flag.Bool("demo", false, "load a worked example into an empty database, so there is something to look at")
 	flag.Parse()
 
-	if err := run(*addr, *dbPath); err != nil {
+	if err := run(*addr, *dbPath, *demo); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(addr, dbPath string) error {
+func run(addr, dbPath string, demo bool) error {
 	store, err := sqlite.Open(dbPath)
 	if err != nil {
 		return fmt.Errorf("open %s: %w", dbPath, err)
 	}
 	defer func() { _ = store.Close() }()
+
+	if demo {
+		if err := loadDemo(context.Background(), store); err != nil {
+			return err
+		}
+	}
 
 	mux := http.NewServeMux()
 	okrapi.Mount(mux, store, connectors.New(store))

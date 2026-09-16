@@ -1,0 +1,398 @@
+{
+  "quarters": [
+    {
+      "capacity": 4,
+      "endDate": "2027-03-31",
+      "label": "Q1 2027",
+      "locked": false,
+      "objectives": [
+        {
+          "allocation": 45,
+          "children": [
+            {
+              "children": [
+                {
+                  "dueDate": "2027-01-29",
+                  "effortWeeks": 4,
+                  "id": "O-1-KR1-M1",
+                  "jiraKeys": [
+                    "DEMO-102"
+                  ],
+                  "owner": "Ada Lovelace",
+                  "progress": 100,
+                  "startDate": "2027-01-04",
+                  "status": "done",
+                  "title": "Spreadsheet import",
+                  "type": "milestone"
+                },
+                {
+                  "dueDate": "2027-03-05",
+                  "effortWeeks": 5,
+                  "id": "O-1-KR1-M2",
+                  "owner": "Grace Hopper",
+                  "progress": 55,
+                  "startDate": "2027-02-01",
+                  "status": "on_track",
+                  "title": "Setup wizard",
+                  "type": "milestone"
+                },
+                {
+                  "dueDate": "2027-03-31",
+                  "effortWeeks": 3,
+                  "id": "O-1-KR1-M3",
+                  "owner": "Ada Lovelace",
+                  "progress": 0,
+                  "startDate": "2027-03-08",
+                  "status": "not_started",
+                  "title": "Worked example on first run",
+                  "type": "milestone"
+                }
+              ],
+              "current": 18,
+              "id": "O-1-KR1",
+              "jiraKeys": [
+                "DEMO-101"
+              ],
+              "metricType": "number",
+              "owner": "Ada Lovelace",
+              "progress": 60,
+              "status": "on_track",
+              "target": 10,
+              "title": "Median time to a first published quarter",
+              "type": "key_result",
+              "unit": "min",
+              "updates": [
+                {
+                  "date": "2027-01-18",
+                  "note": "Baseline measured at 41 min",
+                  "progress": 15
+                },
+                {
+                  "date": "2027-02-08",
+                  "note": "Import path removed most of it",
+                  "progress": 40
+                },
+                {
+                  "date": "2027-03-01",
+                  "note": "18 min; the wizard is the tail",
+                  "progress": 60
+                }
+              ]
+            },
+            {
+              "children": [
+                {
+                  "dueDate": "2027-02-05",
+                  "effortWeeks": 4,
+                  "id": "O-1-KR2-M1",
+                  "owner": "Katherine Johnson",
+                  "progress": 100,
+                  "startDate": "2027-01-11",
+                  "status": "done",
+                  "title": "Getting-started guide",
+                  "type": "milestone"
+                },
+                {
+                  "dueDate": "2027-03-19",
+                  "effortWeeks": 6,
+                  "id": "O-1-KR2-M2",
+                  "owner": "Katherine Johnson",
+                  "progress": 35,
+                  "startDate": "2027-02-08",
+                  "status": "at_risk",
+                  "title": "In-app help for the tree editor",
+                  "type": "milestone"
+                }
+              ],
+              "current": 3,
+              "id": "O-1-KR2",
+              "jiraKeys": [
+                "DEMO-110"
+              ],
+              "metricType": "number",
+              "owner": "Grace Hopper",
+              "progress": 30,
+              "status": "at_risk",
+              "target": 10,
+              "title": "Teams onboarded with no support contact",
+              "type": "key_result",
+              "unit": "teams"
+            }
+          ],
+          "description": "## Why now\nEvery new team still books an onboarding call. That does not scale, and the call is the same call each time.\n\n**Bet:** the product can answer the questions the call answers.",
+          "dueDate": "2027-03-31",
+          "groups": [
+            "Objective",
+            "Growth"
+          ],
+          "id": "O-1",
+          "notes": "Agreed at the Q1 planning session. Revisit at the mid-quarter check.",
+          "owner": "Ada Lovelace",
+          "progress": 55,
+          "progressMode": "auto",
+          "startDate": "2027-01-04",
+          "status": "on_track",
+          "title": "Teams can plan a quarter without us in the room",
+          "type": "objective"
+        },
+        {
+          "allocation": 35,
+          "children": [
+            {
+              "children": [
+                {
+                  "dueDate": "2027-02-19",
+                  "effortWeeks": 6,
+                  "id": "O-2-KR1-M1",
+                  "owner": "Grace Hopper",
+                  "progress": 100,
+                  "startDate": "2027-01-11",
+                  "status": "done",
+                  "title": "Progress roll-up from child issues",
+                  "type": "milestone"
+                },
+                {
+                  "dueDate": "2027-03-26",
+                  "effortWeeks": 5,
+                  "id": "O-2-KR1-M2",
+                  "owner": "Grace Hopper",
+                  "progress": 40,
+                  "startDate": "2027-02-22",
+                  "status": "on_track",
+                  "title": "As-of history so closed quarters stay true",
+                  "type": "milestone"
+                }
+              ],
+              "current": 62,
+              "id": "O-2-KR1",
+              "jiraKeys": [
+                "DEMO-201",
+                "DEMO-202"
+              ],
+              "metricType": "percent",
+              "owner": "Grace Hopper",
+              "progress": 55,
+              "status": "on_track",
+              "target": 90,
+              "title": "Key results updating themselves from the tracker",
+              "type": "key_result",
+              "unit": "%",
+              "updates": [
+                {
+                  "date": "2027-02-01",
+                  "note": "Epic roll-up landed",
+                  "progress": 30
+                },
+                {
+                  "date": "2027-03-01",
+                  "note": "Sub-task roll-up landed",
+                  "progress": 55
+                }
+              ]
+            },
+            {
+              "children": [
+                {
+                  "dueDate": "2027-03-31",
+                  "effortWeeks": 5,
+                  "id": "O-2-KR2-M1",
+                  "owner": "Katherine Johnson",
+                  "progress": 20,
+                  "startDate": "2027-02-15",
+                  "status": "on_track",
+                  "title": "Configurable export columns",
+                  "type": "milestone"
+                }
+              ],
+              "current": 0,
+              "id": "O-2-KR2",
+              "metricType": "boolean",
+              "owner": "Katherine Johnson",
+              "progress": 20,
+              "status": "at_risk",
+              "target": 1,
+              "title": "Quarter export matches the planning template",
+              "type": "key_result"
+            }
+          ],
+          "description": "Weekly check-ins die because they are manual. If the tracker already knows, we should ask it.",
+          "dueDate": "2027-03-31",
+          "groups": [
+            "Objective",
+            "Platform"
+          ],
+          "id": "O-2",
+          "owner": "Grace Hopper",
+          "progress": 45,
+          "startDate": "2027-01-04",
+          "status": "on_track",
+          "title": "Progress is read from the work, not retyped",
+          "type": "objective"
+        },
+        {
+          "allocation": 20,
+          "children": [
+            {
+              "current": 85,
+              "id": "O-3-KR1",
+              "metricType": "percent",
+              "owner": "Katherine Johnson",
+              "progress": 70,
+              "status": "on_track",
+              "target": 95,
+              "title": "Dependency upgrades merged within a week of release",
+              "type": "key_result",
+              "unit": "%"
+            }
+          ],
+          "description": "Unglamorous, load-bearing, and the first thing to get squeezed. Sized explicitly so it is not.",
+          "dueDate": "2027-03-31",
+          "groups": [
+            "Objective",
+            "Keep the Lights On"
+          ],
+          "id": "O-3",
+          "owner": "Katherine Johnson",
+          "progress": 70,
+          "startDate": "2027-01-04",
+          "status": "on_track",
+          "title": "Keep the lights on",
+          "type": "objective"
+        }
+      ],
+      "quarterId": "2027-q1",
+      "startDate": "2027-01-04"
+    },
+    {
+      "capacity": 4,
+      "endDate": "2026-12-31",
+      "label": "Q4 2026",
+      "locked": true,
+      "objectives": [
+        {
+          "allocation": 70,
+          "children": [
+            {
+              "children": [
+                {
+                  "dueDate": "2026-11-06",
+                  "effortWeeks": 5,
+                  "id": "O-A-KR1-M1",
+                  "owner": "Ada Lovelace",
+                  "progress": 100,
+                  "startDate": "2026-10-01",
+                  "status": "done",
+                  "title": "Objective tree editor",
+                  "type": "milestone"
+                },
+                {
+                  "dueDate": "2026-12-11",
+                  "effortWeeks": 5,
+                  "id": "O-A-KR1-M2",
+                  "owner": "Grace Hopper",
+                  "progress": 100,
+                  "startDate": "2026-11-09",
+                  "status": "done",
+                  "title": "Quarter timeline",
+                  "type": "milestone"
+                }
+              ],
+              "current": 1,
+              "id": "O-A-KR1",
+              "metricType": "number",
+              "owner": "Ada Lovelace",
+              "progress": 100,
+              "status": "done",
+              "target": 1,
+              "title": "A quarter planned, tracked and closed without a spreadsheet",
+              "type": "key_result",
+              "unit": "quarters"
+            }
+          ],
+          "description": "A single team, a real quarter, start to finish. If it does not survive that, nothing else matters.",
+          "dueDate": "2026-12-31",
+          "groups": [
+            "Objective",
+            "Discovery"
+          ],
+          "id": "O-A",
+          "owner": "Ada Lovelace",
+          "progress": 100,
+          "startDate": "2026-10-01",
+          "status": "done",
+          "title": "Prove one team can run a whole quarter in the tool",
+          "type": "objective"
+        },
+        {
+          "allocation": 30,
+          "children": [
+            {
+              "current": 1,
+              "id": "O-B-KR1",
+              "metricType": "boolean",
+              "progress": 100,
+              "status": "done",
+              "target": 1,
+              "title": "A decision written down either way",
+              "type": "key_result"
+            }
+          ],
+          "dueDate": "2026-12-31",
+          "groups": [
+            "Objective",
+            "Discovery"
+          ],
+          "id": "O-B",
+          "owner": "Grace Hopper",
+          "progress": 100,
+          "startDate": "2026-10-01",
+          "status": "done",
+          "title": "Decide whether the tracker integration is worth building",
+          "type": "objective"
+        }
+      ],
+      "quarterId": "2026-q4",
+      "startDate": "2026-10-01"
+    },
+    {
+      "capacity": 4,
+      "endDate": "2027-06-30",
+      "label": "Q2 2027",
+      "locked": false,
+      "objectives": [
+        {
+          "allocation": 50,
+          "children": [
+            {
+              "current": 0,
+              "id": "O-X-KR1",
+              "metricType": "boolean",
+              "progress": 0,
+              "status": "not_started",
+              "target": 1,
+              "title": "A shareable read-only quarter view",
+              "type": "key_result"
+            }
+          ],
+          "description": "Draft. The shape of the next bet, not a commitment yet.",
+          "dueDate": "2027-06-30",
+          "groups": [
+            "Objective",
+            "Growth"
+          ],
+          "id": "O-X",
+          "owner": "Ada Lovelace",
+          "progress": 0,
+          "startDate": "2027-04-01",
+          "status": "not_started",
+          "title": "Make a quarter readable by people who did not write it",
+          "type": "objective"
+        }
+      ],
+      "quarterId": "2027-q2",
+      "startDate": "2027-04-01"
+    }
+  ],
+  "schemaVersion": 1,
+  "team": "Atlas"
+}
