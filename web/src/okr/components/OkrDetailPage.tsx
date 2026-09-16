@@ -33,6 +33,7 @@ import {
 } from "../okrTree";
 import { Sparkline } from "../../components/Sparkline";
 import { ClusterChip } from "./ClusterChip";
+import { useClusters } from "../useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
@@ -673,6 +674,7 @@ function MilestoneProgressCard({
 }
 
 export function OkrDetailPage({ teamSlug }: { teamSlug: string }) {
+  const clusters = useClusters(teamSlug);
   const { quarterId, okrId } = useParams<{
     quarterId: string;
     okrId: string;
@@ -962,6 +964,7 @@ export function OkrDetailPage({ teamSlug }: { teamSlug: string }) {
       {creating && (
         <OkrCreatePanel
           teamName={data!.team}
+          clusters={clusters}
           allowedTypes={[creating.type]}
           parentLabel={creating.parentLabel}
           quarterLabel={quarter.label}

@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { useTeamBlob } from "../../api/useTeamBlob";
-import { CLUSTERS, countNodes, objectiveAvgProgress } from "../okrTree";
+import { countNodes, NON_CLUSTER, objectiveAvgProgress } from "../okrTree";
+import { useClusters } from "../useClusters";
 import { QueryState } from "../../components/QueryState";
 import { ClusterChip } from "./ClusterChip";
 import type { TeamOkrsData } from "./types";
 
 export function OkrsLanding({ teamSlug }: { teamSlug: string }) {
+  const clusters = useClusters(teamSlug);
   const { data, isLoading, error } = useTeamBlob<TeamOkrsData>(
     teamSlug,
     "okrs",
@@ -50,7 +52,7 @@ export function OkrsLanding({ teamSlug }: { teamSlug: string }) {
             Cross-quarter view of every OKR tagged to a delivery cluster.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[...CLUSTERS, "Non-Cluster" as const].map((cluster) => (
+            {[...clusters, NON_CLUSTER].map((cluster) => (
               <ClusterChip
                 key={cluster}
                 cluster={cluster}

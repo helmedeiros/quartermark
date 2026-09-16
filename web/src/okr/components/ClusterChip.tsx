@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { CLUSTER_COLORS, type Cluster } from "../okrTree";
+import { clusterColor, type Cluster } from "../okrTree";
+import { useClusters } from "../useClusters";
 
 export function ClusterChip({
   cluster,
@@ -10,7 +11,7 @@ export function ClusterChip({
   teamSlug: string;
   linkable?: boolean;
 }) {
-  const color = (CLUSTER_COLORS as Record<string, string | undefined>)[cluster];
+  const color = clusterColor(cluster, useClusters(teamSlug));
   const chip = (
     <span className={`chip cluster-chip${color ? "" : " neutral"}`}>
       {color && <span className="cluster-dot" style={{ background: color }} />}

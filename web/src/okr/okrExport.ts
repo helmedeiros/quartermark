@@ -1,5 +1,6 @@
 import type { OkrNode, Quarter } from "./components/types";
 import {
+  DEFAULT_CLUSTERS,
   formatMetricValue,
   resolveCluster,
   STATUS_META,
@@ -15,6 +16,10 @@ export interface ExportContext {
   node: OkrNode;
   index: number;
   quarterLabel: string;
+  // The team's cluster vocabulary. Passed in rather than imported so the
+  // exporter works for any team, not just one whose words match a
+  // built-in list.
+  clusters: string[];
   keyResults: OkrNode[];
   milestones: OkrNode[];
   actual: string;
@@ -33,7 +38,11 @@ export interface ExportColumn {
 export const DEFAULT_EXPORT_COLUMNS: ExportColumn[] = [
   { header: "#", width: 4, value: (c) => String(c.index + 1) },
   { header: "Quarter", width: 10, value: (c) => c.quarterLabel },
-  { header: "Cluster", width: 16, value: (c) => resolveCluster(c.node.groups) },
+  {
+    header: "Cluster",
+    width: 16,
+    value: (c) => resolveCluster(c.node.groups, c.clusters),
+  },
   { header: "Objective", width: 32, value: (c) => c.node.title },
   {
     header: "Key Results",
@@ -112,6 +121,7 @@ function buildContext(
   node: OkrNode,
   index: number,
   quarterLabel: string,
+  clusters: string[],
 ): ExportContext {
   const keyResults = collectKeyResults(node);
   const milestones = collectMilestones(node);
@@ -131,6 +141,7 @@ function buildContext(
     node,
     index,
     quarterLabel,
+    clusters,
     keyResults,
     milestones,
     actual: format(withMetric?.current),
@@ -145,9 +156,10 @@ export function formatKeyResults(keyResults: OkrNode[]): string {
 export function buildExportRows(
   quarter: Quarter,
   columns: ExportColumn[] = DEFAULT_EXPORT_COLUMNS,
+  clusters: string[] = DEFAULT_CLUSTERS,
 ): ExportRow[] {
   return quarter.objectives.map((node, index) => {
-    const ctx = buildContext(node, index, quarter.label);
+    const ctx = buildContext(node, index, quarter.label, clusters);
     const row: ExportRow = {};
     for (const column of columns) {
       row[column.header] = column.value(ctx);
@@ -164,10 +176,11 @@ export interface ClusterAllocationRow {
 
 export function buildClusterAllocationRows(
   quarter: Quarter,
+  clusters: string[] = DEFAULT_CLUSTERS,
 ): ClusterAllocationRow[] {
   const byCluster = new Map<string, { total: number; objs: string[] }>();
   for (const o of quarter.objectives) {
-    const cluster = resolveCluster(o.groups);
+    const cluster = resolveCluster(o.groups, clusters);
     const alloc = o.allocation ?? 0;
     const entry = byCluster.get(cluster) ?? { total: 0, objs: [] };
     entry.total += alloc;
@@ -184,3 +197,7 @@ export function buildClusterAllocationRows(
       objectives: objs.join(", "),
     }));
 }
+
+// Re-exported so a caller supplying its own column set can build the
+// same cells the default ones do without reaching into the module.
+export { resolveCluster, STATUS_META } from "./okrTree/metadata";

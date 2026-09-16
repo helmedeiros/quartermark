@@ -25,6 +25,7 @@ export async function buildWorkbook(
   quarterLabel: string,
   quarter: Quarter,
   columns: ExportColumn[] = DEFAULT_EXPORT_COLUMNS,
+  clusters?: string[],
 ): Promise<ExcelJS.Buffer> {
   const workbook = new ExcelJS.Workbook();
 
@@ -42,7 +43,7 @@ export async function buildWorkbook(
   });
   sheet.views = [{ state: "frozen", ySplit: 1 }];
 
-  const rows = buildExportRows(quarter, columns);
+  const rows = buildExportRows(quarter, columns, clusters);
   for (const row of rows) {
     const added = sheet.addRow(row);
     added.eachCell((cell) => (cell.alignment = WRAP_TOP));
@@ -58,7 +59,7 @@ export async function buildWorkbook(
     cell.fill = HEADER_FILL;
     cell.font = HEADER_FONT;
   });
-  const clusterRows = buildClusterAllocationRows(quarter);
+  const clusterRows = buildClusterAllocationRows(quarter, clusters);
   for (const row of clusterRows) {
     const added = clusterSheet.addRow(row);
     added.getCell("objectives").alignment = WRAP_TOP;
@@ -77,8 +78,9 @@ export async function downloadWorkbook(
   teamLabel: string,
   quarter: Quarter,
   columns: ExportColumn[] = DEFAULT_EXPORT_COLUMNS,
+  clusters?: string[],
 ) {
-  const buffer = await buildWorkbook(quarter.label, quarter, columns);
+  const buffer = await buildWorkbook(quarter.label, quarter, columns, clusters);
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });

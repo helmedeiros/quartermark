@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../../api/client";
 import { useTeamBlob } from "../../api/useTeamBlob";
 import { formatRelativeTime } from "../../lib/format";
+import { useOkrConfig } from "../config";
 import { downloadWorkbook } from "../okrExportWorkbook";
 import { collectLabels, collectOwners } from "../okrTree";
 import { OkrCreatePanel } from "./OkrCreatePanel";
@@ -11,6 +12,7 @@ import { OkrQuarterSummary } from "./OkrQuarterSummary";
 import { OkrTreeTable } from "./OkrTreeTable";
 import type { OkrNodeType, Quarter, TeamOkrsData } from "./types";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
+import { useClusters } from "../useClusters";
 
 function jiraSyncStatusLabel(quarter: Quarter): string | null {
   if (!quarter.jiraRefreshedAt) return null;
@@ -23,6 +25,8 @@ function jiraSyncStatusLabel(quarter: Quarter): string | null {
 }
 
 export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
+  const clusters = useClusters(teamSlug);
+  const { exportColumns } = useOkrConfig();
   const { quarterId } = useParams<{ quarterId: string }>();
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useTeamBlob<TeamOkrsData>(
@@ -49,7 +53,8 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
   });
 
   const exportXlsx = useMutation({
-    mutationFn: (quarter: Quarter) => downloadWorkbook(data!.team, quarter),
+    mutationFn: (quarter: Quarter) =>
+      downloadWorkbook(data!.team, quarter, exportColumns, clusters),
   });
 
   useEffect(() => {
@@ -169,6 +174,7 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
       {createRequest && (
         <OkrCreatePanel
           teamName={data!.team}
+          clusters={clusters}
           allowedTypes={[createRequest.type]}
           parentLabel={createRequest.parentLabel}
           quarterLabel={quarter.label}

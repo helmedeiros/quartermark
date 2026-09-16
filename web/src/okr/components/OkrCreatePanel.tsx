@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import {
-  CLUSTERS,
+  NON_CLUSTER,
   currentNumberFor,
   deriveMetricProgress,
   targetNumberFor,
@@ -69,6 +69,7 @@ export function OkrCreatePanel({
   parentLabel,
   quarterLabel,
   teamName,
+  clusters,
   pending,
   ownerOptions = [],
   labelOptions = [],
@@ -78,8 +79,9 @@ export function OkrCreatePanel({
   allowedTypes: OkrNodeType[];
   parentLabel?: string;
   quarterLabel: string;
-  // groups is [team, cluster]; the team half is data, not a constant.
+  // groups is [team, cluster]; both halves are data, not constants.
   teamName: string;
+  clusters: string[];
   pending: boolean;
   ownerOptions?: string[];
   labelOptions?: string[];
@@ -123,7 +125,7 @@ export function OkrCreatePanel({
       title: trimmedTitle,
       description: description.trim() || undefined,
       owner: owner.trim() || undefined,
-      groups: cluster === "Non-Cluster" ? undefined : [teamName, cluster],
+      groups: cluster === NON_CLUSTER ? undefined : [teamName, cluster],
       labels: labelList.length ? labelList : undefined,
       ...(state.type === "key_result" ? metricFieldsFor(state) : {}),
     });
@@ -231,7 +233,7 @@ export function OkrCreatePanel({
               value={cluster}
               onChange={(e) => setCluster(e.target.value as Cluster)}
             >
-              {[...CLUSTERS, "Non-Cluster" as const].map((c) => (
+              {[...clusters, NON_CLUSTER].map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

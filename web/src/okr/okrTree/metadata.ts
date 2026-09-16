@@ -94,10 +94,12 @@ export function allowedChildTypesFor(nodeType: OkrNodeType): OkrNodeType[] {
 
 // The strategic themes objectives are grouped under.
 //
-// A placeholder set: every organisation words these differently, and
-// this list is the one thing in the module that is unavoidably somebody
-// else's vocabulary. Treat it as a default to replace, not a taxonomy.
-export const CLUSTERS = [
+// Every organisation words these differently, so the list is team data
+// (TeamOkrsData.clusters) and this is only the fallback for a team that
+// has not set its own. Nothing in the module may assume these specific
+// names — see resolveCluster and clusterColor, both of which take the
+// list they should work against.
+export const DEFAULT_CLUSTERS = [
   "Growth",
   "Retention",
   "Platform",
@@ -106,32 +108,46 @@ export const CLUSTERS = [
   "Discovery",
   "Keep the Lights On",
   "Cost",
-] as const;
+];
 
-export type Cluster = (typeof CLUSTERS)[number] | "Non-Cluster";
+// A cluster is just a name. The sentinel below means "not in any".
+export type Cluster = string;
 
-export const CLUSTER_COLORS: Record<(typeof CLUSTERS)[number], string> = {
-  Growth: "#2a78d6",
-  Retention: "#eb6834",
-  Platform: "#1baf7a",
-  Reliability: "#eda100",
-  "Developer Experience": "#e87ba4",
-  Discovery: "#008300",
-  "Keep the Lights On": "#4a3aa7",
-  Cost: "#e34948",
-};
+export const NON_CLUSTER = "Non-Cluster";
 
-// Lower-cased spellings people actually type, mapped onto the canonical
-// name. Extend it for your own vocabulary rather than requiring exact
-// case and spacing on input.
-const CLUSTER_ALIASES: Record<string, Cluster> = Object.fromEntries(
-  CLUSTERS.map((c) => [c.toLowerCase(), c]),
-);
+// Colour by position in the team's own list rather than by name, so any
+// vocabulary gets stable, distinct colours without anyone maintaining a
+// palette keyed to their words.
+const CLUSTER_PALETTE = [
+  "#2a78d6",
+  "#eb6834",
+  "#1baf7a",
+  "#eda100",
+  "#e87ba4",
+  "#008300",
+  "#4a3aa7",
+  "#e34948",
+];
 
-export function resolveCluster(groups?: string[]): Cluster {
+export function clusterColor(
+  cluster: Cluster,
+  clusters: string[] = DEFAULT_CLUSTERS,
+): string | undefined {
+  const index = clusters.indexOf(cluster);
+  if (index < 0) return undefined;
+  return CLUSTER_PALETTE[index % CLUSTER_PALETTE.length];
+}
+
+// groups is [team, cluster]. Matching is case- and space-insensitive
+// because people type these by hand; anything unrecognised is
+// NON_CLUSTER rather than a new cluster invented by a typo.
+export function resolveCluster(
+  groups?: string[],
+  clusters: string[] = DEFAULT_CLUSTERS,
+): Cluster {
   const raw = groups?.[1]?.trim().toLowerCase();
-  if (!raw) return "Non-Cluster";
-  return CLUSTER_ALIASES[raw] ?? "Non-Cluster";
+  if (!raw) return NON_CLUSTER;
+  return clusters.find((c) => c.toLowerCase() === raw) ?? NON_CLUSTER;
 }
 
 export function effectiveGroups(path: OkrNode[]): string[] {

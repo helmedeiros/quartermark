@@ -11,6 +11,7 @@ function renderPanel(allowedTypes: OkrNodeType[]) {
       allowedTypes={allowedTypes}
       quarterLabel="Q1 2026"
       teamName="Atlas"
+      clusters={["Growth", "Platform"]}
       pending={false}
       onCreate={onCreate}
       onClose={onClose}

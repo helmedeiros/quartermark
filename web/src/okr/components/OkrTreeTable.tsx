@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import {
   canDropOkrNode,
-  CLUSTERS,
+  NON_CLUSTER,
   COMMITMENT_META,
   effectiveProgress,
   findParentNode,
@@ -21,7 +21,6 @@ import {
   STATUS_META,
   TYPE_BADGE_CLASS,
   TYPE_META,
-  type Cluster,
 } from "../okrTree";
 import {
   initialColumnWidths,
@@ -32,6 +31,7 @@ import {
 import { formatRelativeTime, initials } from "../../lib/format";
 import { jiraTicketUrl } from "../jira";
 import { ClusterChip } from "./ClusterChip";
+import { useClusters } from "../useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
 import { OkrRowMenu } from "./OkrRowMenu";
@@ -369,14 +369,15 @@ function EditableCluster({
   groups: string[];
   teamSlug: string;
   // groups is [team, cluster]. Editing the cluster must preserve the
-  // team half, and fall back to the loaded team rather than a literal.
+  // team half, taken from the loaded data rather than a literal.
   teamName: string;
   disabled: boolean;
   onCommit: (groups: string[]) => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const current = resolveCluster(groups);
-  const allClusters = [...CLUSTERS, "Non-Cluster" as const];
+  const clusters = useClusters(teamSlug);
+  const current = resolveCluster(groups, clusters);
+  const allClusters = [...clusters, NON_CLUSTER];
 
   if (!editing) {
     return (
@@ -401,9 +402,9 @@ function EditableCluster({
       className="okr-editable-select"
       value={current}
       onChange={(e) => {
-        const chosen = e.target.value as Cluster;
+        const chosen = e.target.value;
         const team = groups[0] ?? teamName;
-        onCommit(chosen === "Non-Cluster" ? [team] : [team, chosen]);
+        onCommit(chosen === NON_CLUSTER ? [team] : [team, chosen]);
         setEditing(false);
       }}
       onBlur={() => setEditing(false)}
@@ -520,6 +521,7 @@ export function OkrTreeTable({
   } | null>(null);
   const tree = useOkrTreeMutations(teamSlug, data, quarterId);
   const jiraBaseUrl = useJiraBaseUrl(teamSlug);
+  const clusters = useClusters(teamSlug);
   const quarter = data.quarters.find((q) => q.quarterId === quarterId);
   const canEdit = editable && !!quarter;
 
@@ -717,7 +719,7 @@ export function OkrTreeTable({
                       {!hiddenColumns.includes("cluster") && (
                         <td>
                           <ClusterChip
-                            cluster={resolveCluster(groups)}
+                            cluster={resolveCluster(groups, clusters)}
                             teamSlug={teamSlug}
                           />
                         </td>
