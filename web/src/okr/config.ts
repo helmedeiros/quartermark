@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import { createContext, useContext } from "react";
 import { DEFAULT_EXPORT_COLUMNS, type ExportColumn } from "./okrExport";
 
 // What a host application can change about the module without forking it.
@@ -13,25 +13,11 @@ export interface OkrConfig {
   exportColumns: ExportColumn[];
 }
 
-const DEFAULTS: OkrConfig = { exportColumns: DEFAULT_EXPORT_COLUMNS };
+export const OKR_CONFIG_DEFAULTS: OkrConfig = {
+  exportColumns: DEFAULT_EXPORT_COLUMNS,
+};
 
-const OkrConfigContext = createContext<OkrConfig>(DEFAULTS);
-
-export function OkrConfigProvider({
-  children,
-  ...overrides
-}: Partial<OkrConfig> & { children: ReactNode }) {
-  const value = useMemo(
-    () => ({ ...DEFAULTS, ...overrides }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [overrides.exportColumns],
-  );
-  return (
-    <OkrConfigContext.Provider value={value}>
-      {children}
-    </OkrConfigContext.Provider>
-  );
-}
+export const OkrConfigContext = createContext<OkrConfig>(OKR_CONFIG_DEFAULTS);
 
 // Defaults apply when no provider is mounted, so the module works
 // standalone and a host opts in only to what it wants to change.
