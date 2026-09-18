@@ -133,19 +133,22 @@ describe("buildExportRows column injection", () => {
 
   // The point of the split: an exporter that can only ever emit one
   // organisation's vocabulary is an exporter only that organisation can
-  // use. The default set must not carry it.
-  it("defaults to a column set with no company-specific vocabulary", () => {
-    const headers = Object.keys(buildExportRows(quarter)[0]);
-    for (const jargon of [
-      "Initiatives",
-      "Headline KR",
-      "Theme",
-      "OKR/Initiatives this links to",
-    ]) {
-      expect(headers).not.toContain(jargon);
-    }
-    expect(headers).toContain("Objective");
-    expect(headers).toContain("Key Results");
+  // Pinned positively rather than by listing what it must not contain:
+  // naming another organisation's planning vocabulary in order to forbid
+  // it would publish the very words the default set exists to avoid.
+  it("defaults to a neutral column set", () => {
+    expect(Object.keys(buildExportRows(quarter)[0])).toEqual([
+      "#",
+      "Quarter",
+      "Cluster",
+      "Objective",
+      "Key Results",
+      "Actual",
+      "Target",
+      "Details",
+      "Status",
+      "Allocation",
+    ]);
   });
 
   it("computes the shared context once per objective, not once per column", () => {
