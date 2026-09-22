@@ -29,6 +29,7 @@ import {
   resolveCluster,
   sortedUpdates,
   STATUS_META,
+  statusMeta,
   TYPE_META,
 } from "../okrTree";
 import { Sparkline } from "../../components/Sparkline";
@@ -191,7 +192,7 @@ function JiraNestedItemRow({
   onUnlink: () => void;
 }) {
   const snapshot = node.jiraIssues?.[jiraKey];
-  const statusMeta = snapshot?.status ? STATUS_META[snapshot.status] : null;
+  const snapshotStatus = snapshot?.status ? statusMeta(snapshot.status) : null;
   const jiraBaseUrl = useJiraBaseUrl(useCurrentTeamSlug());
   return (
     <div className="okr-nested-item-row">
@@ -205,8 +206,10 @@ function JiraNestedItemRow({
         <strong>{jiraKey}</strong>
         {snapshot?.summary ? ` ${snapshot.summary}` : ""}
       </a>
-      {statusMeta ? (
-        <span className={`chip ${statusMeta.cls}`}>{statusMeta.label}</span>
+      {snapshotStatus ? (
+        <span className={`chip ${snapshotStatus.cls}`}>
+          {snapshotStatus.label}
+        </span>
       ) : (
         <span className="chip neutral">Not synced</span>
       )}
@@ -400,7 +403,7 @@ function GradeCard({
   const progress = effectiveProgress(node);
   const statusIsAuto = node.statusMode === "auto";
   const predicted = statusIsAuto ? predictStatus(node, quarter) : node.status;
-  const meta = STATUS_META[predicted];
+  const meta = statusMeta(predicted);
   const trend = sortedUpdates(node).map((u) => u.progress);
   const score = statusIsAuto ? predictedScore(node, quarter) : null;
 
@@ -805,7 +808,7 @@ export function OkrDetailPage({ teamSlug }: { teamSlug: string }) {
               <p className="small muted">No status updates logged yet.</p>
             ) : (
               [...updates].reverse().map((u, i) => {
-                const meta = STATUS_META[u.status];
+                const meta = statusMeta(u.status);
                 return (
                   <div
                     key={i}

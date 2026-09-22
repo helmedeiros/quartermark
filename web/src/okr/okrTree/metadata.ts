@@ -6,13 +6,33 @@ import type {
   OkrStatus,
 } from "../components/types";
 
-export const STATUS_META: Record<OkrStatus, { label: string; cls: string }> = {
+export interface StatusMeta {
+  label: string;
+  cls: string;
+}
+
+export const STATUS_META: Record<OkrStatus, StatusMeta> = {
   not_started: { label: "Not started", cls: "neutral" },
   on_track: { label: "On track", cls: "good" },
   at_risk: { label: "At risk", cls: "warning" },
   off_track: { label: "Off track", cls: "critical" },
   done: { label: "Done", cls: "good" },
 };
+
+// What an unrecognised status renders as.
+//
+// The document is hand-editable JSON and the API stores whatever it is
+// given, so a status outside the five above is reachable — and indexing
+// STATUS_META directly turns that into "cannot read properties of
+// undefined", which takes out a whole chart rather than one cell. The
+// value is echoed back so the mistake is visible instead of silently
+// becoming "Not started".
+export function statusMeta(status: string | undefined): StatusMeta {
+  if (status && status in STATUS_META) {
+    return STATUS_META[status as OkrStatus];
+  }
+  return { label: status ? `${status} (unknown)` : "—", cls: "neutral" };
+}
 
 export const COMMITMENT_META: Record<
   OkrCommitment,

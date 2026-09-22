@@ -3,7 +3,7 @@ import {
   DEFAULT_CLUSTERS,
   formatMetricValue,
   resolveCluster,
-  STATUS_META,
+  statusMeta,
 } from "./okrTree/metadata";
 
 // A row is keyed by column header, so the shape follows whatever columns
@@ -59,7 +59,7 @@ export const DEFAULT_EXPORT_COLUMNS: ExportColumn[] = [
   {
     header: "Status",
     width: 12,
-    value: (c) => STATUS_META[c.node.status].label,
+    value: (c) => statusMeta(c.node.status).label,
   },
   {
     header: "Allocation",
@@ -200,4 +200,4 @@ export function buildClusterAllocationRows(
 
 // Re-exported so a caller supplying its own column set can build the
 // same cells the default ones do without reaching into the module.
-export { resolveCluster, STATUS_META } from "./okrTree/metadata";
+export { resolveCluster, statusMeta } from "./okrTree/metadata";

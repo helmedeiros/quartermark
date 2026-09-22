@@ -7,7 +7,7 @@ import {
   weekSpans,
 } from "../../lib/ganttLayout";
 import {
-  STATUS_META,
+  statusMeta,
   weeklyCapacity,
   type ObjectiveGanttGroup,
   type OkrGanttBar,
@@ -501,7 +501,7 @@ export function OkrGanttChart({
                 ? dragDeltaPx
                 : 0);
             const barWidth = Math.max(2, x2 - x1);
-            const status = STATUS_META[bar.status];
+            const status = statusMeta(bar.status);
             const previewDates = (() => {
               if (dragMode === "move") {
                 const deltaDays = Math.round(dragDeltaPx / dayWidth);

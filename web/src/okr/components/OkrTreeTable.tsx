@@ -19,6 +19,7 @@ import {
   latestUpdate,
   resolveCluster,
   STATUS_META,
+  statusMeta,
   TYPE_BADGE_CLASS,
   TYPE_META,
 } from "../okrTree";
@@ -281,7 +282,7 @@ function EditableStatus({
   onCommit: (value: OkrStatus) => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const meta = STATUS_META[value];
+  const meta = statusMeta(value);
 
   if (!editing) {
     return (
@@ -692,8 +693,8 @@ export function OkrTreeTable({
               {rows.map(({ node, depth, hasChildren, groups, jiraKey }) => {
                 if (jiraKey) {
                   const snapshot = node.jiraIssues?.[jiraKey];
-                  const statusMeta = snapshot?.status
-                    ? STATUS_META[snapshot.status]
+                  const jiraStatus = snapshot?.status
+                    ? statusMeta(snapshot.status)
                     : undefined;
                   return (
                     <tr key={`${node.id}::jira::${jiraKey}`}>
@@ -740,9 +741,9 @@ export function OkrTreeTable({
                         )}
                       </td>
                       <td>
-                        {statusMeta ? (
-                          <span className={`chip ${statusMeta.cls}`}>
-                            {statusMeta.label}
+                        {jiraStatus ? (
+                          <span className={`chip ${jiraStatus.cls}`}>
+                            {jiraStatus.label}
                           </span>
                         ) : (
                           "—"

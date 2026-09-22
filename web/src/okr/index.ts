@@ -15,10 +15,10 @@ export {
   DEFAULT_EXPORT_COLUMNS,
   formatKeyResults,
   resolveCluster,
-  STATUS_META,
+  statusMeta,
   type ExportColumn,
   type ExportContext,
 } from "./okrExport";
-export { DEFAULT_CLUSTERS } from "./okrTree/metadata";
+export { DEFAULT_CLUSTERS, STATUS_META } from "./okrTree/metadata";
 export { jiraLabelSearchUrl, jiraTicketUrl } from "./jira";
 export type { OkrNode, Quarter, TeamOkrsData } from "./components/types";

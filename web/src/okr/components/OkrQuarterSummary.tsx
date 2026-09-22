@@ -5,7 +5,7 @@ import {
   buildStatusBreakdown,
   collectNodesByScope,
   progressDeltaSinceLastWeek,
-  STATUS_META,
+  statusMeta,
   type SummaryScope,
 } from "../okrTree";
 import type { Quarter } from "./types";
@@ -105,7 +105,7 @@ export function OkrQuarterSummary({ quarter }: { quarter: Quarter }) {
                   .map((b) => (
                     <div
                       key={b.status}
-                      className={`okr-summary-bar chip-bg-${STATUS_META[b.status].cls}`}
+                      className={`okr-summary-bar chip-bg-${statusMeta(b.status).cls}`}
                       style={{ height: `${(b.count / maxCount) * 100}%` }}
                     />
                   ))}
@@ -115,8 +115,8 @@ export function OkrQuarterSummary({ quarter }: { quarter: Quarter }) {
                   .filter((b) => b.count > 0)
                   .map((b) => (
                     <div key={b.status} className="okr-summary-legend-row">
-                      <span className={`chip ${STATUS_META[b.status].cls}`}>
-                        {STATUS_META[b.status].label}
+                      <span className={`chip ${statusMeta(b.status).cls}`}>
+                        {statusMeta(b.status).label}
                       </span>
                       <strong>{b.count}</strong>
                     </div>
