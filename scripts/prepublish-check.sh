@@ -19,10 +19,14 @@ ok() { echo "  ok   $1"; }
 
 step "Secrets, across the whole history"
 if command -v gitleaks >/dev/null 2>&1; then
-	if gitleaks detect --source "$ROOT_DIR" --no-banner --redact >/dev/null 2>&1; then
+	# `gitleaks git`, not the older `detect`: in 8.x `detect` scans
+	# something else and reported clean on a repository with three
+	# planted secrets in it. A scanner that cannot fail is worse than
+	# no scanner, so this one is checked against a planted secret.
+	if gitleaks git "$ROOT_DIR" --no-banner --redact >/dev/null 2>&1; then
 		ok "gitleaks found nothing in any commit"
 	else
-		fail "gitleaks found something — run it directly for the detail"
+		fail "gitleaks found something — run 'gitleaks git .' for the detail"
 	fi
 else
 	fail "gitleaks is not installed; a publish must not skip this"
