@@ -1,0 +1,33 @@
+# Tokens that must never appear in this repository's SOURCE.
+#
+# One extended-regex pattern per line; blank lines and # comments ignored.
+# Matching is case-insensitive. See scripts/leak-check.sh.
+#
+# Only GENERIC patterns belong here: this file is public, and writing a
+# name into it to forbid that name publishes it. Anyone extracting this
+# project from a private codebase adds their own vocabulary to
+# denylist.local.txt, which is gitignored and never leaves their machine.
+
+# Credential shapes
+ghp_[A-Za-z0-9]{20,}
+github_pat_[A-Za-z0-9_]{20,}
+gho_[A-Za-z0-9]{20,}
+xox[baprs]-[A-Za-z0-9-]{10,}
+ATATT[A-Za-z0-9]{20,}
+AKIA[0-9A-Z]{16}
+-----BEGIN [A-Z ]*PRIVATE KEY
+
+# Capability URLs: a document id is an access grant when link-sharing is on
+docs\.google\.com/document
+drive\.google\.com/file
+
+# Real SaaS tenants. example/acme/demo are the fixtures we standardised on.
+[a-z0-9-]+\.atlassian\.net
+
+# Absolute paths leak the operator's account name
+/Users/[a-z]
+
+# NOTE: "workday" is deliberately NOT listed. It names a widely-used HR
+# product and appears in honest descriptive prose; listing it produced
+# only false positives. The internal workday-mcp host is covered by the
+# company-specific pattern in denylist.local.txt.

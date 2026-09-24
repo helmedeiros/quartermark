@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A fork's pull request gets no secrets and no write access. Nothing here
+# needs either.
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make check
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+
+  leaks:
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: a file deleted from HEAD is still published, and a
+      # scan of the working tree would report clean on exactly the case
+      # worth catching.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Credentials and identifiers
+        run: ./scripts/leak-check.sh --tracked
+      - name: Secrets, across the whole history
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  demo:
+    # The demo is the first thing anyone sees. If it stops coming up,
+    # that should break the build rather than someone's first impression.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Boot the demo and query it
+        run: |
+          go build -o okrd ./cmd/okrd
+          QUARTERMARK_DB=ci.db ./okrd -demo -addr 127.0.0.1:8770 &
+          for i in $(seq 1 20); do
+            curl -sf http://127.0.0.1:8770/api/teams >/dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8770/api/teams | grep -q '"slug"'
+          curl -sf http://127.0.0.1:8770/api/teams/atlas/blobs/okrs | grep -q '"quarters"'

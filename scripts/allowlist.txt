@@ -1,0 +1,8 @@
+# Lines matching any pattern here are NOT reported by scripts/leak-check.sh,
+# even if they match the denylist.
+#
+# This exists so fixtures can name a SaaS host without the scan having to
+# encode "any tenant except ours" as a regex — extended regular
+# expressions have no negative lookahead, and the shell's grep is BSD.
+
+(example|acme|demo|yourteam)\.atlassian\.net

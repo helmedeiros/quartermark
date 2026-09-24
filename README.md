@@ -132,6 +132,11 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the package layout, the two ports
 that matter, and why the OKR tree is a versioned JSON document rather than a
 set of tables.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). In short: `make check`,
+`make web-test`, and squash merges.
+
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

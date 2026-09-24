@@ -21,3 +21,7 @@ quartermark.db
 demo.db
 web/node_modules/
 web/dist/
+
+# Your own organisation vocabulary, if you extracted this from a private
+# codebase. Never committed.
+scripts/denylist.local.txt
