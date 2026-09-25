@@ -51,10 +51,18 @@ jobs:
           fetch-depth: 0
       - name: Credentials and identifiers
         run: ./scripts/leak-check.sh --tracked
+      # The official action is not used: it scans the range
+      # <first-commit>^..<head>, and the first commit has no parent, so
+      # it fails on any repository's initial push. Invoking gitleaks
+      # directly also means CI runs exactly what the local gate runs.
       - name: Secrets, across the whole history
-        uses: gitleaks/gitleaks-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSfL -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks git . --no-banner --redact
 
   demo:
     # The demo is the first thing anyone sees. If it stops coming up,
