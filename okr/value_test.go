@@ -88,18 +88,28 @@ func TestProgressIsBoundedToAPercentage(t *testing.T) {
 	}
 }
 
-// The tree is objective → key result → milestone. A milestone directly
-// under an objective would have no key result to contribute to.
-func TestOnlyTheRealTreeShapeIsAllowed(t *testing.T) {
-	allowed := map[okr.NodeType]okr.NodeType{
-		okr.Objective: okr.KeyResult,
-		okr.KeyResult: okr.Milestone,
+// An objective holds anything — sub-objectives break up a large bet,
+// and a milestone hangs directly off one when the work has no
+// measurable key result. A milestone is a leaf.
+//
+// Written from the shape real plans actually have: an earlier, tidier
+// rule rejected a live document.
+func TestTheTreeShapeMatchesWhatPlansActuallyDo(t *testing.T) {
+	allowed := map[okr.NodeType][]okr.NodeType{
+		okr.Objective: {okr.Objective, okr.KeyResult, okr.Milestone},
+		okr.KeyResult: {okr.Milestone},
+		okr.Milestone: nil,
 	}
 	all := []okr.NodeType{okr.Objective, okr.KeyResult, okr.Milestone}
 
 	for _, parent := range all {
 		for _, child := range all {
-			want := allowed[parent] == child
+			want := false
+			for _, c := range allowed[parent] {
+				if c == child {
+					want = true
+				}
+			}
 			if got := parent.CanContain(child); got != want {
 				t.Errorf("%s.CanContain(%s) = %v, want %v", parent, child, got, want)
 			}

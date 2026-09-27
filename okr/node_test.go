@@ -53,20 +53,36 @@ func TestValidateRejectsDuplicateIdsAnywhereInTheTree(t *testing.T) {
 	}
 }
 
-// The tree is objective → key result → milestone. A milestone hung
-// directly off an objective has no key result to contribute to, so its
-// progress would roll up into nothing.
+// A milestone is a leaf, so anything under one is a mistake.
 func TestValidateRejectsAnIllegalParentChildPair(t *testing.T) {
 	tree := node(t, "O-1", okr.Objective,
-		node(t, "M-1", okr.Milestone),
+		node(t, "M-1", okr.Milestone,
+			node(t, "KR-1", okr.KeyResult),
+		),
 	)
 
 	err := tree.Validate()
 	if err == nil {
-		t.Fatal("a milestone directly under an objective should be rejected")
+		t.Fatal("a key result under a milestone should be rejected")
 	}
-	if !strings.Contains(err.Error(), "M-1") {
+	if !strings.Contains(err.Error(), "KR-1") {
 		t.Errorf("the error should name the offending node, got %q", err)
+	}
+}
+
+// Shapes real plans use: a sub-objective breaking up a large bet, and a
+// milestone hanging straight off an objective when there is no
+// measurable key result for it.
+func TestValidateAcceptsSubObjectivesAndBareMilestones(t *testing.T) {
+	tree := node(t, "O-1", okr.Objective,
+		node(t, "O-1a", okr.Objective,
+			node(t, "KR-1", okr.KeyResult),
+		),
+		node(t, "M-1", okr.Milestone),
+	)
+
+	if err := tree.Validate(); err != nil {
+		t.Fatalf("this is a shape real plans have: %v", err)
 	}
 }
 

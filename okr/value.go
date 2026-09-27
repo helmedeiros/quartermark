@@ -26,13 +26,16 @@ func ParseNodeType(s string) (NodeType, error) {
 }
 
 // CanContain reports whether a node of this type may hold one of the
-// other. The tree is objective → key result → milestone, and nothing
-// else: a milestone under an objective would have no key result to
-// contribute its progress to.
+// other.
+//
+// An objective holds anything: sub-objectives are how a large bet is
+// broken up, and a milestone hangs directly off one when the work has
+// no measurable key result of its own. A key result holds milestones.
+// A milestone is a leaf.
 func (t NodeType) CanContain(child NodeType) bool {
 	switch t {
 	case Objective:
-		return child == KeyResult
+		return child == Objective || child == KeyResult || child == Milestone
 	case KeyResult:
 		return child == Milestone
 	default:

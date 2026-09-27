@@ -121,3 +121,24 @@ type metricPointDoc struct {
 	Date    string  `json:"date"`
 	Current float64 `json:"current"`
 }
+
+// snapshotDoc is what the tracker last said about one linked issue, as
+// stored. Decoded on demand rather than eagerly, because the document
+// keeps them in a map keyed by issue.
+type snapshotDoc struct {
+	Summary   string      `json:"summary,omitempty"`
+	IssueType string      `json:"issueType,omitempty"`
+	Status    string      `json:"status,omitempty"`
+	Progress  int         `json:"progress,omitempty"`
+	Assignee  string      `json:"assignee,omitempty"`
+	Labels    []string    `json:"labels,omitempty"`
+	DueDate   string      `json:"dueDate,omitempty"`
+	Sprints   []sprintDoc `json:"sprints,omitempty"`
+	SyncedAt  string      `json:"syncedAt,omitempty"`
+}
+
+type sprintDoc struct {
+	Name      string `json:"name"`
+	StartDate string `json:"startDate,omitempty"`
+	EndDate   string `json:"endDate,omitempty"`
+}
