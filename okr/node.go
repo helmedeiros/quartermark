@@ -32,23 +32,16 @@ type MetricPoint struct {
 	Current float64
 }
 
-// Metric is a key result's measurable target. Present or absent as a
-// whole: a target without a type cannot be formatted, and a current
-// without a target cannot be judged.
+// Metric is a key result's measurable target. A concept in its own
+// right — a number with no type cannot be formatted and no unit cannot
+// be read — so it is present or absent as a whole. Target and current
+// stay optional within it: a key result can have a target before anyone
+// has measured against it.
 type Metric struct {
 	Type    MetricType
-	Target  float64
+	Target  *float64
 	Current *float64
 	Unit    string
-}
-
-// Sizing is a milestone's place on the calendar and its cost in weeks.
-// Grouped because the timeline needs all of it or none: a bar cannot be
-// drawn from a start with no end.
-type Sizing struct {
-	Start       Date
-	Due         Date
-	EffortWeeks float64
 }
 
 // TrackerSnapshot is what the issue tracker last said about one linked
@@ -98,7 +91,15 @@ type Node struct {
 	ActualAllocation *float64
 
 	Metric *Metric
-	Sizing *Sizing
+
+	// Three independent optionals rather than one "sizing" concept.
+	// Objectives carry dates without effort, and a milestone may be
+	// dated before it is estimated; grouping them would invent a
+	// presence question the document does not have, and turn an absent
+	// effort into a zero one on the way back out.
+	Start       Date
+	Due         Date
+	EffortWeeks *float64
 
 	Commitment               Commitment
 	ContributesToParentGrade bool
