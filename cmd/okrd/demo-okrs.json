@@ -126,7 +126,13 @@
             "Growth"
           ],
           "id": "O-1",
-          "notes": "Agreed at the Q1 planning session. Revisit at the mid-quarter check.",
+          "notes": [
+            {
+              "author": "Ada Lovelace",
+              "comment": "Agreed at the Q1 planning session. Revisit at the mid-quarter check.",
+              "date": "2027-01-11"
+            }
+          ],
           "owner": "Ada Lovelace",
           "progress": 55,
           "progressMode": "auto",

@@ -42,6 +42,37 @@ func splitExtras(raw []byte, v any, known []string) (extras, error) {
 	return all, nil
 }
 
+// keepEmptyPresence records collection members that are present but
+// empty, so they come back the way they went in.
+//
+// An empty list and no list mean the same thing to every consumer, so
+// normalising would be defensible — but it would also rewrite documents
+// that already exist the first time they are saved, turning a read into
+// a diff. Cheaper to keep them than to explain them.
+func keepEmptyPresence(raw []byte, e extras, fields []string) (extras, error) {
+	var all map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &all); err != nil {
+		return e, err
+	}
+	for _, f := range fields {
+		v, present := all[f]
+		if !present {
+			continue
+		}
+		var probe []json.RawMessage
+		// A non-list (or null) decodes to nil here too, which is the
+		// case worth keeping: the member was written and says nothing.
+		if err := json.Unmarshal(v, &probe); err == nil && len(probe) > 0 {
+			continue
+		}
+		if e == nil {
+			e = extras{}
+		}
+		e[f] = v
+	}
+	return e, nil
+}
+
 // mergeExtras marshals v and folds the unclaimed members back in.
 //
 // A known field wins over a carried one: if the domain now models
