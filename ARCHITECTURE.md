@@ -72,6 +72,27 @@ web/src/okr/          the frontend module: one importable unit, one export.
 web/src/              the shell around it — routing, first run, registry.
 ```
 
+The frontend module is laid out as the same hexagon:
+
+```
+web/src/okr/
+  domain/             the model, the tree rules, issue-type classification.
+                      No React, no fetching, no adapter import.
+  application/        the use cases — read a plan, apply a rule, write it
+                      back (useClusters, useOkrTreeMutations).
+  adapters/inbound/   React components. A person drives the module through
+                      them, which makes them this hexagon's controllers.
+  adapters/outbound/  Jira URLs and the xlsx workbook — the module reaching
+                      at another system and at the filesystem.
+  config/             what an organisation supplies rather than what the
+                      module decides, arriving through a React context.
+  index.ts            the whole public surface. The host imports nothing
+                      else, which is what lets the inside be rearranged.
+```
+
+`layers.test.ts` enforces the same dependency rule `architecture_test.go`
+enforces for Go, by resolving each relative import against the filesystem.
+
 ## Why the folders read this way
 
 `okr` and `app` sit at the root because they are the hexagon and its use

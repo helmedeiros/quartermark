@@ -2,7 +2,6 @@ import type { OkrNode, OkrStatus, Quarter } from "../model";
 import type { DateWindow } from "../../../lib/dateWindow";
 import type { GanttRow } from "../../../lib/ganttLayout";
 import { yearWeekLabel } from "../../../lib/ganttLayout";
-import { jiraTicketUrl } from "../../adapters/outbound/jira";
 import { effectiveDateRange } from "./auto";
 
 function okrLink(teamSlug: string, quarterId: string, nodeId: string): string {
@@ -263,29 +262,4 @@ export function sprintGanttBars(
   return [...real, ...projected].sort(
     (a, b) => a.start.getTime() - b.start.getTime(),
   );
-}
-
-export function jiraEpicGanttRows(
-  quarter: Quarter,
-  jiraBaseUrl: string,
-): GanttRow[] {
-  const seen = new Map<string, GanttRow>();
-  const walk = (node: OkrNode) => {
-    for (const [key, snapshot] of Object.entries(node.jiraIssues ?? {})) {
-      if (snapshot.issueType !== "Epic" || !snapshot.dueDate) continue;
-      if (seen.has(key)) continue;
-      const { start } = effectiveDateRange(node, quarter);
-      if (!start) continue;
-      seen.set(key, {
-        label: `${key} ${snapshot.summary ?? ""}`.trim(),
-        start: new Date(start),
-        end: new Date(snapshot.dueDate),
-        category: "Jira Epic",
-        link: jiraTicketUrl(jiraBaseUrl, key),
-      });
-    }
-    for (const child of node.children ?? []) walk(child);
-  };
-  for (const objective of quarter.objectives) walk(objective);
-  return [...seen.values()];
 }

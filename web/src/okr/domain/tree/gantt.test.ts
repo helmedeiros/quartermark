@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Quarter } from "../model";
 import {
-  jiraEpicGanttRows,
   milestoneGanttRows,
   objectiveColor,
   objectiveGanttGroups,
@@ -197,28 +196,6 @@ describe("objectiveGanttGroups", () => {
     const groups = objectiveGanttGroups(quarter, "demo-squad");
     expect(groups[0].objective.id).toBe("O-1");
     expect(groups[0].milestones[0].id).toBe("O-1-M1");
-  });
-});
-
-describe("jiraEpicGanttRows", () => {
-  it("keeps only Epic-typed issues that have a due date", () => {
-    const rows = jiraEpicGanttRows(quarter, "https://example.atlassian.net");
-    const labels = rows.map((r) => r.label);
-    expect(labels).toContain("PROJ-1 Ship it");
-    expect(labels.some((l) => l.startsWith("PROJ-2"))).toBe(false);
-    expect(labels.some((l) => l.startsWith("PROJ-3"))).toBe(false);
-  });
-
-  it("dedupes an epic linked from more than one node", () => {
-    const rows = jiraEpicGanttRows(quarter, "https://example.atlassian.net");
-    expect(rows.filter((r) => r.label.startsWith("PROJ-1"))).toHaveLength(1);
-  });
-
-  it("anchors the epic's start at the linking node's effective start", () => {
-    const rows = jiraEpicGanttRows(quarter, "https://example.atlassian.net");
-    const proj1 = rows.find((r) => r.label.startsWith("PROJ-1"))!;
-    expect(proj1.end).toEqual(new Date("2026-11-15"));
-    expect(proj1.link).toBe("https://example.atlassian.net/browse/PROJ-1");
   });
 });
 
