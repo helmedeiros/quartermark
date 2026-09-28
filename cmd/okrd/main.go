@@ -48,8 +48,11 @@ func run(addr, dbPath string, demo bool) error {
 	}
 
 	mux := http.NewServeMux()
-	resolver := connectors.New(store, newTrackerClient)
-	okrapi.Mount(mux, app.New(store, store, store, resolver))
+	var tracker app.Tracker = connectors.New(store, newTrackerClient)
+	if demo {
+		tracker = withDemoTracker(tracker)
+	}
+	okrapi.Mount(mux, app.New(store, store, store, tracker))
 
 	log.Printf("quartermark listening on http://%s (database: %s)", addr, dbPath)
 	root := http.NewServeMux()

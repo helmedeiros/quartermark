@@ -39,6 +39,11 @@ func loadDemo(ctx context.Context, store okr.Store) error {
 		return fmt.Errorf("store the demo quarters: %w", err)
 	}
 
+	connectors := []byte(`{"jira":{"baseUrl":"https://example.atlassian.net","email":"demo@example.com","token":"demo"}}`)
+	if err := store.PutTeamBlob(ctx, demoTeamSlug, "connectors", connectors); err != nil {
+		return fmt.Errorf("configure the demo tracker: %w", err)
+	}
+
 	log.Printf("loaded demo data: team %q with three quarters — open /t/%s/okrs", demoTeamName, demoTeamSlug)
 	return nil
 }

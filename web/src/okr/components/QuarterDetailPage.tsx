@@ -13,6 +13,7 @@ import { OkrTreeTable } from "./OkrTreeTable";
 import type { OkrNodeType, Quarter, TeamOkrsData } from "./types";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { useClusters } from "../useClusters";
+import { useJiraBaseUrl } from "../../api/useOkrSettings";
 
 function jiraSyncStatusLabel(quarter: Quarter): string | null {
   if (!quarter.jiraRefreshedAt) return null;
@@ -52,16 +53,18 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
     },
   });
 
+  const trackerConfigured = useJiraBaseUrl(teamSlug) !== "";
+
   const exportXlsx = useMutation({
     mutationFn: (quarter: Quarter) =>
       downloadWorkbook(data!.team, quarter, exportColumns, clusters),
   });
 
   useEffect(() => {
-    if (!quarterId) return;
+    if (!quarterId || !trackerConfigured) return;
     refreshJira.mutate(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamSlug, quarterId]);
+  }, [teamSlug, quarterId, trackerConfigured]);
 
   if (isLoading) return <p>Loading…</p>;
   if (error) return <p>Failed to load OKRs: {String(error)}</p>;
@@ -105,14 +108,18 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
           >
             Gantt view
           </Link>
-          <button
-            type="button"
-            className="timeline-nav-btn"
-            disabled={refreshJira.isPending}
-            onClick={() => refreshJira.mutate(true)}
-          >
-            {refreshJira.isPending ? "Refreshing…" : "Force refresh from Jira"}
-          </button>
+          {trackerConfigured && (
+            <button
+              type="button"
+              className="timeline-nav-btn"
+              disabled={refreshJira.isPending}
+              onClick={() => refreshJira.mutate(true)}
+            >
+              {refreshJira.isPending
+                ? "Refreshing…"
+                : "Force refresh from Jira"}
+            </button>
+          )}
           <button
             type="button"
             className="timeline-nav-btn"
@@ -133,7 +140,7 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
       </div>
       {refreshJira.isError && (
         <p className="small muted" style={{ marginTop: -6 }}>
-          Jira refresh unavailable: {String(refreshJira.error)}
+          Could not refresh from Jira. Check the team's connector settings.
         </p>
       )}
       {exportXlsx.isError && (
