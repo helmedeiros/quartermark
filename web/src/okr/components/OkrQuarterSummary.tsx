@@ -7,8 +7,8 @@ import {
   progressDeltaSinceLastWeek,
   statusMeta,
   type SummaryScope,
-} from "../okrTree";
-import type { Quarter } from "./types";
+} from "../domain/tree";
+import type { Quarter } from "../domain/model";
 import { OkrProgressChart } from "./OkrProgressChart";
 
 const SCOPE_LABELS: Record<SummaryScope, string> = {

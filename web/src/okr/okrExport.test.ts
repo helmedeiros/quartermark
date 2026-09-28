@@ -4,7 +4,7 @@ import {
   buildExportRows,
   DEFAULT_EXPORT_COLUMNS,
 } from "./okrExport";
-import type { Quarter } from "./components/types";
+import type { Quarter } from "./domain/model";
 
 const quarter: Quarter = {
   quarterId: "2026-q4",

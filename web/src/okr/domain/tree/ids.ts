@@ -1,4 +1,4 @@
-import type { OkrNode, OkrNodeType, Quarter } from "../components/types";
+import type { OkrNode, OkrNodeType, Quarter } from "../model";
 
 const TOP_LEVEL_ID_PREFIX: Record<OkrNodeType, string> = {
   objective: "O",

@@ -6,9 +6,9 @@ import {
   type DateWindow,
   type Granularity,
 } from "../../lib/dateWindow";
-import { objectiveGanttGroups, sprintGanttBars } from "../okrTree";
+import { objectiveGanttGroups, sprintGanttBars } from "../domain/tree";
 import { OkrGanttChart } from "./OkrGanttChart";
-import type { TeamOkrsData } from "./types";
+import type { TeamOkrsData } from "../domain/model";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { queryStateMessage } from "../../components/queryStateMessage";
 

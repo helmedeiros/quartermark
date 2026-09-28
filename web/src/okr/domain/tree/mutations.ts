@@ -1,4 +1,4 @@
-import type { OkrNode, OkrNodeType, Quarter } from "../components/types";
+import type { OkrNode, OkrNodeType, Quarter } from "../model";
 import { nextIdFor } from "./ids";
 import { TYPE_META } from "./metadata";
 import { effectiveProgress, findNode, updateNode } from "./traversal";

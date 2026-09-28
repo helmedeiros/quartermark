@@ -1,6 +1,6 @@
-import type { OkrNode, Quarter } from "../components/types";
-import type { DateWindow } from "../../lib/dateWindow";
-import { weekSpans } from "../../lib/ganttLayout";
+import type { OkrNode, Quarter } from "../model";
+import type { DateWindow } from "../../../lib/dateWindow";
+import { weekSpans } from "../../../lib/ganttLayout";
 import { collectMilestonesWithObjective, milestoneDateRange } from "./gantt";
 
 export interface WeekCapacityContributor {

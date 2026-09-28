@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { objectiveGanttGroups, sprintGanttBars } from "../okrTree";
+import { objectiveGanttGroups, sprintGanttBars } from "../domain/tree";
 import { OkrGanttChart } from "./OkrGanttChart";
-import type { Quarter } from "./types";
+import type { Quarter } from "../domain/model";
 
 const quarter: Quarter = {
   quarterId: "2026-q4",

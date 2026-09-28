@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTeamBlob } from "../../api/useTeamBlob";
-import type { TeamOkrsData } from "./types";
+import type { TeamOkrsData } from "../domain/model";
 
 const COLLAPSED_KEY = "okrsSidebarCollapsed";
 const EXPANDED_WIDTH = "280px";

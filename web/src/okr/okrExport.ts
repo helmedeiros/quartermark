@@ -1,10 +1,10 @@
-import type { OkrNode, Quarter } from "./components/types";
+import type { OkrNode, Quarter } from "./domain/model";
 import {
   DEFAULT_CLUSTERS,
   formatMetricValue,
   resolveCluster,
   statusMeta,
-} from "./okrTree/metadata";
+} from "./domain/tree/metadata";
 
 export type ExportRow = Record<string, string>;
 
@@ -185,4 +185,4 @@ export function buildClusterAllocationRows(
     }));
 }
 
-export { resolveCluster, statusMeta } from "./okrTree/metadata";
+export { resolveCluster, statusMeta } from "./domain/tree/metadata";

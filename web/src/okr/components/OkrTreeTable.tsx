@@ -22,7 +22,7 @@ import {
   statusMeta,
   TYPE_BADGE_CLASS,
   TYPE_META,
-} from "../okrTree";
+} from "../domain/tree";
 import {
   initialColumnWidths,
   OKR_COLUMNS,
@@ -42,7 +42,7 @@ import type {
   OkrNodeType,
   OkrStatus,
   TeamOkrsData,
-} from "./types";
+} from "../domain/model";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { useJiraBaseUrl } from "../../api/useOkrSettings";
 

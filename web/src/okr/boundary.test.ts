@@ -1,7 +1,8 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
+const HOST_ROOT = resolve(process.cwd(), "src");
 const UNIT_ROOT = resolve(process.cwd(), "src/okr") + "/";
 
 function filesUnder(dir: string): string[] {
@@ -37,39 +38,28 @@ describe("the OKR module's import boundary", () => {
 
   it("reaches outside itself only for the agreed shared leaves", () => {
     const allowed = new Set([
-      "../../api/client",
-      "../../api/useTeamBlob",
-      "../../api/useOkrSettings",
-      "../../lib/dateWindow",
-      "../../lib/format",
-      "../../lib/ganttLayout",
-      "../../lib/markdown",
-      "../../lib/markdownEditor",
-      "../../lib/scale",
-      "../../components/QueryState",
-      "../../components/queryStateMessage",
-      "../../components/Sparkline",
-      "../api/client",
-      "../api/useTeamBlob",
-      "../api/useOkrSettings",
-      "../lib/dateWindow",
-      "../lib/format",
-      "../lib/ganttLayout",
-      "../lib/markdown",
-      "../lib/markdownEditor",
-      "../lib/scale",
-      "../components/QueryState",
-      "../components/queryStateMessage",
-      "../components/Sparkline",
-      "../sections",
-      "../useCurrentTeamSlug",
-      "../../useCurrentTeamSlug",
+      "api/client",
+      "api/useTeamBlob",
+      "api/useOkrSettings",
+      "lib/dateWindow",
+      "lib/format",
+      "lib/ganttLayout",
+      "lib/markdown",
+      "lib/markdownEditor",
+      "lib/scale",
+      "components/QueryState",
+      "components/queryStateMessage",
+      "components/Sparkline",
+      "sections",
+      "useCurrentTeamSlug",
     ]);
     const escaping = files.flatMap((f) =>
       importsOf(f)
-        .filter((spec) => spec.startsWith("../") && !isInsideUnit(f, spec))
-        .filter((spec) => !allowed.has(spec))
-        .map((spec) => `${f.replace(UNIT_ROOT, "")} -> ${spec}`),
+        .filter((spec) => spec.startsWith("."))
+        .map((spec) => ({ spec, target: resolve(dirname(f), spec) }))
+        .filter(({ target }) => !target.startsWith(UNIT_ROOT))
+        .filter(({ target }) => !allowed.has(relative(HOST_ROOT, target)))
+        .map(({ spec }) => `${f.replace(UNIT_ROOT, "")} -> ${spec}`),
     );
     expect(escaping).toEqual([]);
   });
@@ -90,8 +80,3 @@ describe("what the host application may import from the module", () => {
     expect(deep).toEqual([]);
   });
 });
-
-function isInsideUnit(file: string, spec: string): boolean {
-  const resolved = join(file, "..", spec);
-  return resolved.startsWith(UNIT_ROOT);
-}

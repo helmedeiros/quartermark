@@ -1,9 +1,4 @@
-import type {
-  OkrNode,
-  OkrStatus,
-  OkrUpdate,
-  Quarter,
-} from "../components/types";
+import type { OkrNode, OkrStatus, OkrUpdate, Quarter } from "../model";
 import { effectiveProgress } from "./traversal";
 
 export type SummaryScope = "overall" | "kr" | "milestone";

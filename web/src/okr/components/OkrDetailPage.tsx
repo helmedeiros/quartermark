@@ -31,7 +31,7 @@ import {
   STATUS_META,
   statusMeta,
   TYPE_META,
-} from "../okrTree";
+} from "../domain/tree";
 import { Sparkline } from "../../components/Sparkline";
 import { ClusterChip } from "./ClusterChip";
 import { useClusters } from "../useClusters";
@@ -49,7 +49,7 @@ import type {
   OkrStatus,
   Quarter,
   TeamOkrsData,
-} from "./types";
+} from "../domain/model";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { useJiraBaseUrl } from "../../api/useOkrSettings";
 import { useCurrentTeamSlug } from "../../useCurrentTeamSlug";

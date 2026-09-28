@@ -1,6 +1,6 @@
 import { useTeamBlob } from "../api/useTeamBlob";
-import type { TeamOkrsData } from "./components/types";
-import { DEFAULT_CLUSTERS } from "./okrTree/metadata";
+import type { TeamOkrsData } from "./domain/model";
+import { DEFAULT_CLUSTERS } from "./domain/tree/metadata";
 
 export function useClusters(teamSlug: string): string[] {
   const { data } = useTeamBlob<TeamOkrsData>(teamSlug, "okrs");

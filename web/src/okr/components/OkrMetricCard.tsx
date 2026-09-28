@@ -8,10 +8,10 @@ import {
   hasContributingChildren,
   targetNumberFor,
   updateNode,
-} from "../okrTree";
+} from "../domain/tree";
 import { MetricFieldsBlock } from "./MetricFieldsBlock";
 import { OkrMetricChart } from "./OkrMetricChart";
-import type { OkrMetricType, OkrNode, TeamOkrsData } from "./types";
+import type { OkrMetricType, OkrNode, TeamOkrsData } from "../domain/model";
 
 function defaultMetricType(node: OkrNode): OkrMetricType {
   if (node.metricType) return node.metricType;

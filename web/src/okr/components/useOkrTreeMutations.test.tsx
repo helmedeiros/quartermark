@@ -3,7 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "../../api/client";
-import type { TeamOkrsData } from "./types";
+import type { TeamOkrsData } from "../domain/model";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 
 function wrapper({ children }: { children: ReactNode }) {

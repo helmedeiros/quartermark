@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OkrNode, Quarter } from "../components/types";
+import type { OkrNode, Quarter } from "../model";
 import {
   effectiveDateRange,
   effectiveStatus,

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "../../api/client";
-import { sortedNotes, updateNode } from "../okrTree";
-import type { OkrNode, OkrNote, TeamOkrsData } from "./types";
+import { sortedNotes, updateNode } from "../domain/tree";
+import type { OkrNode, OkrNote, TeamOkrsData } from "../domain/model";
 
 export function OkrNotesCard({
   teamSlug,

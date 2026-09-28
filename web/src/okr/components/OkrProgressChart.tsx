@@ -1,5 +1,5 @@
 import { linearScale } from "../../lib/scale";
-import type { OkrUpdate } from "./types";
+import type { OkrUpdate } from "../domain/model";
 
 export function OkrProgressChart({
   updates,

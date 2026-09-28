@@ -1,4 +1,4 @@
-import type { OkrNode, OkrStatus, Quarter } from "../components/types";
+import type { OkrNode, OkrStatus, Quarter } from "../model";
 import { effectiveProgress } from "./traversal";
 
 export function effectiveDateRange(

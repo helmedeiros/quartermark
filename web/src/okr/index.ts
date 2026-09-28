@@ -11,6 +11,6 @@ export {
   type ExportColumn,
   type ExportContext,
 } from "./okrExport";
-export { DEFAULT_CLUSTERS, STATUS_META } from "./okrTree/metadata";
+export { DEFAULT_CLUSTERS, STATUS_META } from "./domain/tree/metadata";
 export { jiraLabelSearchUrl, jiraTicketUrl } from "./jira";
-export type { OkrNode, Quarter, TeamOkrsData } from "./components/types";
+export type { OkrNode, Quarter, TeamOkrsData } from "./domain/model";

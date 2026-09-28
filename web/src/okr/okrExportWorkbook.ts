@@ -1,5 +1,5 @@
 import ExcelJS from "exceljs";
-import type { Quarter } from "./components/types";
+import type { Quarter } from "./domain/model";
 import {
   buildClusterAllocationRows,
   buildExportRows,

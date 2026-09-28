@@ -1,4 +1,4 @@
-import type { OkrNode, OkrUpdate, Quarter } from "../components/types";
+import type { OkrNode, OkrUpdate, Quarter } from "../model";
 
 export interface FlatOkrRow {
   node: OkrNode;

@@ -1,7 +1,7 @@
 import ExcelJS from "exceljs";
 import { describe, expect, it } from "vitest";
 import { buildWorkbook } from "./okrExportWorkbook";
-import type { Quarter } from "./components/types";
+import type { Quarter } from "./domain/model";
 
 const quarter: Quarter = {
   quarterId: "2026-q4",

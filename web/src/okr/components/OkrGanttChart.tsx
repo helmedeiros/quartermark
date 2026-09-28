@@ -12,8 +12,8 @@ import {
   type ObjectiveGanttGroup,
   type OkrGanttBar,
   type SprintGanttBar,
-} from "../okrTree";
-import type { Quarter } from "./types";
+} from "../domain/tree";
+import type { Quarter } from "../domain/model";
 
 const ROW_HEIGHT_OBJECTIVE = 28;
 const ROW_HEIGHT_MILESTONE = 46;

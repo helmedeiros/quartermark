@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OkrNode } from "../components/types";
+import type { OkrNode } from "../model";
 import { effectiveProgress } from "./traversal";
 
 describe("effectiveProgress", () => {

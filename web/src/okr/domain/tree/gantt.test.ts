@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Quarter } from "../components/types";
+import type { Quarter } from "../model";
 import {
   jiraEpicGanttRows,
   milestoneGanttRows,

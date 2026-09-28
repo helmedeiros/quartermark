@@ -4,7 +4,7 @@ import type {
   OkrNode,
   OkrNodeType,
   OkrStatus,
-} from "../components/types";
+} from "../model";
 
 export interface StatusMeta {
   label: string;

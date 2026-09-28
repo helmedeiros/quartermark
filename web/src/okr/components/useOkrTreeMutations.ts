@@ -6,8 +6,13 @@ import {
   removeNodeWithHistory,
   reparentNode,
   updateNode,
-} from "../okrTree";
-import type { OkrNode, OkrNodeType, Quarter, TeamOkrsData } from "./types";
+} from "../domain/tree";
+import type {
+  OkrNode,
+  OkrNodeType,
+  Quarter,
+  TeamOkrsData,
+} from "../domain/model";
 
 export function useOkrTreeMutations(
   teamSlug: string,

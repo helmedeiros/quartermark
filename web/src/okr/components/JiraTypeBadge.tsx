@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { classifyJiraIssueType } from "../jiraIssueType";
+import { classifyJiraIssueType } from "../domain/jiraIssueType";
 
 const JIRA_TYPE_META: Record<
   ReturnType<typeof classifyJiraIssueType>,
