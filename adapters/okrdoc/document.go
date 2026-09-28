@@ -113,10 +113,10 @@ type metricPointDoc struct {
 type snapshotDoc struct {
 	Summary   string      `json:"summary,omitempty"`
 	IssueType string      `json:"issueType,omitempty"`
-	Status    string      `json:"status,omitempty"`
-	Progress  int         `json:"progress,omitempty"`
-	Assignee  string      `json:"assignee,omitempty"`
-	Labels    []string    `json:"labels,omitempty"`
+	Status    string      `json:"status"`
+	Progress  int         `json:"progress"`
+	Assignee  string      `json:"assignee"`
+	Labels    []string    `json:"labels"`
 	DueDate   string      `json:"dueDate,omitempty"`
 	Sprints   []sprintDoc `json:"sprints,omitempty"`
 	SyncedAt  string      `json:"syncedAt,omitempty"`

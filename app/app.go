@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
@@ -42,6 +43,9 @@ func (s *Service) CreateTeam(ctx context.Context, team org.Team) (org.Team, erro
 	if team.Slug == "" || team.Name == "" {
 		return org.Team{}, fmt.Errorf("%w: a team needs both a slug and a name", ErrInvalidRequest)
 	}
+	if team.CreatedAt == "" {
+		team.CreatedAt = time.Now().UTC().Format(time.RFC3339)
+	}
 	if err := s.teams.Create(ctx, team); err != nil {
 		return org.Team{}, err
 	}
@@ -72,7 +76,11 @@ func (s *Service) SearchTracker(ctx context.Context, teamSlug, query string) ([]
 	if tracker == nil {
 		return nil, ErrNoTracker
 	}
-	return tracker.SearchIssuesByText(ctx, query, searchResultLimit)
+	results, err := tracker.SearchIssuesByText(ctx, query, searchResultLimit)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrTrackerUnavailable, err)
+	}
+	return results, nil
 }
 
 const searchResultLimit = 20
@@ -88,3 +96,5 @@ func (s *Service) WriteSection(ctx context.Context, teamSlug, section string, ra
 	}
 	return s.documents.PutSection(ctx, teamSlug, section, raw)
 }
+
+var ErrNotFound = errors.New("app: not found")

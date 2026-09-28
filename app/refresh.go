@@ -55,7 +55,7 @@ func (s *Service) RefreshFromTracker(ctx context.Context, teamSlug string, req R
 
 		asOf, err := okr.RefreshQuarter(ctx, tracker, quarter, now)
 		if err != nil {
-			return result, fmt.Errorf("refreshing %s: %w", quarter.ID, err)
+			return result, fmt.Errorf("%w: refreshing %s: %s", ErrTrackerUnavailable, quarter.ID, err)
 		}
 
 		quarter.TrackerRefreshedAt = now
@@ -95,15 +95,15 @@ func (s *Service) RefreshNodeFromTracker(ctx context.Context, teamSlug, quarterI
 
 	quarter := plan.Quarter(quarterID)
 	if quarter == nil {
-		return false, fmt.Errorf("app: no quarter %q", quarterID)
+		return false, fmt.Errorf("%w: no quarter %q", ErrNotFound, quarterID)
 	}
 
 	refreshed, err := okr.RefreshNode(ctx, tracker, quarter, nodeID, time.Now().UTC())
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("%w: %s", ErrTrackerUnavailable, err)
 	}
 	if !refreshed {
-		return false, nil
+		return false, fmt.Errorf("%w: no node %q in quarter %q", ErrNotFound, nodeID, quarterID)
 	}
 	if err := s.plans.Save(ctx, teamSlug, plan); err != nil {
 		return false, err

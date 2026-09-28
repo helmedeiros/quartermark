@@ -117,6 +117,11 @@ func refreshNodeFromTracker(service *app.Service) http.HandlerFunc {
 		if !httpx.DecodeJSON(w, r, &body) {
 			return
 		}
+		if body.QuarterID == "" || body.NodeID == "" {
+			httpx.WriteError(w, http.StatusBadRequest,
+				errors.New("quarterId and nodeId are both required"))
+			return
+		}
 		refreshed, err := service.RefreshNodeFromTracker(r.Context(),
 			r.PathValue("teamSlug"), body.QuarterID, body.NodeID)
 		if err != nil {
@@ -151,7 +156,7 @@ func statusFor(err error) int {
 	switch {
 	case errors.Is(err, app.ErrNoTracker):
 		return http.StatusServiceUnavailable
-	case errors.Is(err, app.ErrNoPlan), errors.Is(err, storeerr.ErrNotFound):
+	case errors.Is(err, app.ErrNoPlan), errors.Is(err, app.ErrNotFound), errors.Is(err, storeerr.ErrNotFound):
 		return http.StatusNotFound
 	case errors.Is(err, storeerr.ErrAlreadyExists):
 		return http.StatusConflict
