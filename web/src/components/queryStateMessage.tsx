@@ -15,3 +15,12 @@ export function queryStateMessage(
   }
   return null;
 }
+
+export function queriesStateMessage(
+  isLoading: boolean,
+  failures: { label: string; error: unknown }[],
+): ReactNode | null {
+  if (isLoading) return queryStateMessage(true, null, "");
+  const failed = failures.find((f) => f.error);
+  return failed ? queryStateMessage(false, failed.error, failed.label) : null;
+}

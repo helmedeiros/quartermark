@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { queryStateMessage } from "./queryStateMessage";
+import { queriesStateMessage, queryStateMessage } from "./queryStateMessage";
 
 describe("queryStateMessage", () => {
   it("returns a loading element while isLoading is true", () => {
@@ -22,5 +22,40 @@ describe("queryStateMessage", () => {
     render(<>{queryStateMessage(true, new Error("boom"), "widgets")}</>);
     expect(screen.getByText("Loading…")).toBeInTheDocument();
     expect(screen.queryByText(/boom/)).not.toBeInTheDocument();
+  });
+});
+
+describe("queriesStateMessage", () => {
+  it("reports loading regardless of any failures", () => {
+    render(
+      <>
+        {queriesStateMessage(true, [
+          { label: "routines", error: new Error("boom") },
+        ])}
+      </>,
+    );
+    expect(screen.getByText("Loading…")).toBeInTheDocument();
+    expect(screen.queryByText(/boom/)).not.toBeInTheDocument();
+  });
+
+  it("names the first failure in the order given", () => {
+    render(
+      <>
+        {queriesStateMessage(false, [
+          { label: "routines", error: null },
+          { label: "OKRs", error: new Error("second") },
+          { label: "engineers", error: new Error("third") },
+        ])}
+      </>,
+    );
+    expect(screen.getByText(/Failed to load OKRs/)).toBeInTheDocument();
+    expect(screen.getByText(/second/)).toBeInTheDocument();
+    expect(screen.queryByText(/third/)).not.toBeInTheDocument();
+  });
+
+  it("returns null when nothing is loading and nothing failed", () => {
+    expect(
+      queriesStateMessage(false, [{ label: "routines", error: null }]),
+    ).toBeNull();
   });
 });
