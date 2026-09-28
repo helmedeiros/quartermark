@@ -5,19 +5,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
 type demoTracker struct{ real trackerFor }
 
 type trackerFor interface {
-	For(ctx context.Context, teamSlug string) (jirasource.Source, error)
+	For(ctx context.Context, teamSlug string) (tracker.Source, error)
 }
 
 func withDemoTracker(real trackerFor) demoTracker { return demoTracker{real: real} }
 
-func (d demoTracker) For(ctx context.Context, teamSlug string) (jirasource.Source, error) {
+func (d demoTracker) For(ctx context.Context, teamSlug string) (tracker.Source, error) {
 	if teamSlug == demoTeamSlug {
 		return demoIssues{}, nil
 	}
@@ -32,15 +32,15 @@ func daysAgo(n int) time.Time {
 
 func at(t time.Time) *time.Time { return &t }
 
-func (demoIssues) catalogue() map[string]jirasource.Issue {
-	return map[string]jirasource.Issue{
+func (demoIssues) catalogue() map[string]tracker.Issue {
+	return map[string]tracker.Issue{
 		"DEMO-101": {
 			Key: "DEMO-101", IssueType: "Epic", Summary: "Time to a first published quarter",
 			StatusCategory: "indeterminate", Assignee: "Ada Lovelace",
 			Labels:  []string{"onboarding"},
 			Created: daysAgo(64), InProgressAt: at(daysAgo(50)),
 			DueDate: at(daysAgo(-18)),
-			Sprints: []jirasource.Sprint{
+			Sprints: []tracker.Sprint{
 				{Name: "Sprint 12", StartDate: at(daysAgo(21)), EndDate: at(daysAgo(7))},
 				{Name: "Sprint 13", StartDate: at(daysAgo(7)), EndDate: at(daysAgo(-7))},
 			},
@@ -69,9 +69,9 @@ func (demoIssues) catalogue() map[string]jirasource.Issue {
 	}
 }
 
-func (d demoIssues) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasource.Issue, error) {
+func (d demoIssues) GetIssuesByKeys(_ context.Context, keys []string) ([]tracker.Issue, error) {
 	catalogue := d.catalogue()
-	out := make([]jirasource.Issue, 0, len(keys))
+	out := make([]tracker.Issue, 0, len(keys))
 	for _, key := range keys {
 		if issue, known := catalogue[key]; known {
 			out = append(out, issue)
@@ -80,8 +80,8 @@ func (d demoIssues) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasou
 	return out, nil
 }
 
-func (demoIssues) GetChildIssues(_ context.Context, key string) ([]jirasource.ChildIssue, error) {
-	children := map[string][]jirasource.ChildIssue{
+func (demoIssues) GetChildIssues(_ context.Context, key string) ([]tracker.ChildIssue, error) {
+	children := map[string][]tracker.ChildIssue{
 		"DEMO-101": {
 			{Created: daysAgo(64), Resolved: at(daysAgo(52))},
 			{Created: daysAgo(60), Resolved: at(daysAgo(33))},
@@ -98,14 +98,14 @@ func (demoIssues) GetChildIssues(_ context.Context, key string) ([]jirasource.Ch
 	return children[key], nil
 }
 
-func (d demoIssues) SearchIssuesByText(_ context.Context, query string, limit int) ([]jirasource.IssueSummary, error) {
-	var out []jirasource.IssueSummary
+func (d demoIssues) SearchIssuesByText(_ context.Context, query string, limit int) ([]tracker.IssueSummary, error) {
+	var out []tracker.IssueSummary
 	for _, issue := range d.catalogue() {
 		if len(out) >= limit {
 			break
 		}
 		if matchesQuery(issue, query) {
-			out = append(out, jirasource.IssueSummary{
+			out = append(out, tracker.IssueSummary{
 				Key: issue.Key, Summary: issue.Summary, IssueType: issue.IssueType,
 			})
 		}
@@ -113,7 +113,7 @@ func (d demoIssues) SearchIssuesByText(_ context.Context, query string, limit in
 	return out, nil
 }
 
-func matchesQuery(issue jirasource.Issue, query string) bool {
+func matchesQuery(issue tracker.Issue, query string) bool {
 	if query == "" {
 		return true
 	}
@@ -122,6 +122,6 @@ func matchesQuery(issue jirasource.Issue, query string) bool {
 		strings.Contains(strings.ToLower(issue.Summary), needle)
 }
 
-func (demoIssues) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]jirasource.Issue, error) {
+func (demoIssues) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]tracker.Issue, error) {
 	return nil, nil
 }

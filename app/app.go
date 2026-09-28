@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/org"
 )
 
@@ -17,7 +17,7 @@ type Documents interface {
 }
 
 type Tracker interface {
-	For(ctx context.Context, teamSlug string) (jirasource.Source, error)
+	For(ctx context.Context, teamSlug string) (tracker.Source, error)
 }
 
 var ErrNoTracker = errors.New("app: no issue tracker configured for this team")
@@ -68,7 +68,7 @@ func (s *Service) ReadSettings(ctx context.Context, teamSlug string) (Settings, 
 	return parseSettings(raw)
 }
 
-func (s *Service) SearchTracker(ctx context.Context, teamSlug, query string) ([]jirasource.IssueSummary, error) {
+func (s *Service) SearchTracker(ctx context.Context, teamSlug, query string) ([]tracker.IssueSummary, error) {
 	tracker, err := s.tracker.For(ctx, teamSlug)
 	if err != nil {
 		return nil, err

@@ -5,25 +5,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
 type fakeTracker struct {
-	byKey           map[string]jirasource.Issue
-	childrenByKey   map[string][]jirasource.ChildIssue
+	byKey           map[string]tracker.Issue
+	childrenByKey   map[string][]tracker.ChildIssue
 	getIssuesByKeys int
 	getChildIssues  int
 }
 
-func (f *fakeTracker) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]jirasource.Issue, error) {
+func (f *fakeTracker) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]tracker.Issue, error) {
 	return nil, nil
 }
 
-func (f *fakeTracker) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasource.Issue, error) {
+func (f *fakeTracker) GetIssuesByKeys(_ context.Context, keys []string) ([]tracker.Issue, error) {
 	f.getIssuesByKeys++
-	out := make([]jirasource.Issue, 0, len(keys))
+	out := make([]tracker.Issue, 0, len(keys))
 	for _, k := range keys {
 		if issue, ok := f.byKey[k]; ok {
 			out = append(out, issue)
@@ -32,12 +32,12 @@ func (f *fakeTracker) GetIssuesByKeys(_ context.Context, keys []string) ([]jiras
 	return out, nil
 }
 
-func (f *fakeTracker) GetChildIssues(_ context.Context, key string) ([]jirasource.ChildIssue, error) {
+func (f *fakeTracker) GetChildIssues(_ context.Context, key string) ([]tracker.ChildIssue, error) {
 	f.getChildIssues++
 	return f.childrenByKey[key], nil
 }
 
-func (f *fakeTracker) SearchIssuesByText(context.Context, string, int) ([]jirasource.IssueSummary, error) {
+func (f *fakeTracker) SearchIssuesByText(context.Context, string, int) ([]tracker.IssueSummary, error) {
 	return nil, nil
 }
 
@@ -62,7 +62,7 @@ func refresh(t *testing.T, tracker *fakeTracker, q *okr.Quarter, now time.Time) 
 }
 
 func TestProgressComesFromTheStatusOfEveryLinkedIssue(t *testing.T) {
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
 		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done"},
 		"PROJ-2": {Key: "PROJ-2", StatusCategory: "indeterminate"},
 	}}
@@ -81,7 +81,7 @@ func TestProgressComesFromTheStatusOfEveryLinkedIssue(t *testing.T) {
 
 func TestADueDateReachesTheSnapshotOnlyWhenTheIssueHasOne(t *testing.T) {
 	due := time.Date(2026, 12, 31, 0, 0, 0, 0, time.UTC)
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
 		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done", DueDate: &due},
 		"PROJ-2": {Key: "PROJ-2", StatusCategory: "indeterminate"},
 	}}
@@ -101,8 +101,8 @@ func TestADueDateReachesTheSnapshotOnlyWhenTheIssueHasOne(t *testing.T) {
 func TestSprintsReachTheSnapshotWithWhicheverDatesTheyHave(t *testing.T) {
 	start := time.Date(2026, 8, 31, 9, 0, 0, 0, time.UTC)
 	end := time.Date(2026, 9, 14, 9, 0, 0, 0, time.UTC)
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
-		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done", Sprints: []jirasource.Sprint{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
+		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done", Sprints: []tracker.Sprint{
 			{Name: "Sprint 41", StartDate: &start, EndDate: &end},
 			{Name: "Sprint 42"},
 		}},
@@ -127,8 +127,8 @@ func TestOneIssueTakesItsProgressFromItsChildWorkItems(t *testing.T) {
 	created := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	resolved := time.Date(2026, 1, 15, 0, 0, 0, 0, time.UTC)
 	tracker := &fakeTracker{
-		byKey: map[string]jirasource.Issue{"PROJ-1": {Key: "PROJ-1", StatusCategory: "indeterminate"}},
-		childrenByKey: map[string][]jirasource.ChildIssue{"PROJ-1": {
+		byKey: map[string]tracker.Issue{"PROJ-1": {Key: "PROJ-1", StatusCategory: "indeterminate"}},
+		childrenByKey: map[string][]tracker.ChildIssue{"PROJ-1": {
 			{Created: created, Resolved: &resolved},
 			{Created: created},
 			{Created: created},
@@ -145,7 +145,7 @@ func TestOneIssueTakesItsProgressFromItsChildWorkItems(t *testing.T) {
 }
 
 func TestAClosedQuarterIsReadAsOfItsEndNotNow(t *testing.T) {
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
 		"PROJ-1": {
 			Key:     "PROJ-1",
 			Created: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -167,7 +167,7 @@ func TestAClosedQuarterIsReadAsOfItsEndNotNow(t *testing.T) {
 }
 
 func TestAQuarterWithNothingLinkedTouchesTheTracker(t *testing.T) {
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{}}
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{}}
 	q := milestoneQuarter(t)
 
 	refresh(t, tracker, &q, time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC))
@@ -188,7 +188,7 @@ func twoMilestoneQuarter(t *testing.T) okr.Quarter {
 }
 
 func TestRefreshingOneNodeLeavesTheOthersAlone(t *testing.T) {
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
 		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done"},
 		"PROJ-2": {Key: "PROJ-2", StatusCategory: "done"},
 	}}
@@ -259,7 +259,7 @@ func TestUnlinkingTheLastIssueClearsTheStaleSnapshotAndRecordsIt(t *testing.T) {
 }
 
 func TestUnlinkingOneOfSeveralRecalculatesFromWhatRemains(t *testing.T) {
-	tracker := &fakeTracker{byKey: map[string]jirasource.Issue{
+	tracker := &fakeTracker{byKey: map[string]tracker.Issue{
 		"PROJ-1": {Key: "PROJ-1", StatusCategory: "done"},
 	}}
 	q := milestoneQuarter(t, "PROJ-1")

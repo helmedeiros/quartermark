@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 )
 
 const (
@@ -19,7 +19,7 @@ func IsRefreshFresh(lastRefresh, now time.Time) bool {
 	return !lastRefresh.IsZero() && now.Sub(lastRefresh) < RefreshTTL
 }
 
-func RefreshQuarter(ctx context.Context, tracker jirasource.Source, quarter *Quarter, now time.Time) (time.Time, error) {
+func RefreshQuarter(ctx context.Context, source tracker.Source, quarter *Quarter, now time.Time) (time.Time, error) {
 	asOf := quarter.progressAsOf(now)
 
 	keys := quarter.trackerKeys()
@@ -27,7 +27,7 @@ func RefreshQuarter(ctx context.Context, tracker jirasource.Source, quarter *Qua
 		return asOf, nil
 	}
 
-	readings, err := readTracker(ctx, tracker, keys, asOf)
+	readings, err := readTracker(ctx, source, keys, asOf)
 	if err != nil {
 		return asOf, err
 	}
@@ -36,7 +36,7 @@ func RefreshQuarter(ctx context.Context, tracker jirasource.Source, quarter *Qua
 	return asOf, nil
 }
 
-func RefreshNode(ctx context.Context, tracker jirasource.Source, quarter *Quarter, nodeID string, now time.Time) (bool, error) {
+func RefreshNode(ctx context.Context, source tracker.Source, quarter *Quarter, nodeID string, now time.Time) (bool, error) {
 	node := quarter.Find(nodeID)
 	if node == nil {
 		return false, nil
@@ -46,7 +46,7 @@ func RefreshNode(ctx context.Context, tracker jirasource.Source, quarter *Quarte
 	readings := trackerReadings{}
 	if len(node.TrackerKeys) > 0 {
 		var err error
-		if readings, err = readTracker(ctx, tracker, node.TrackerKeys, asOf); err != nil {
+		if readings, err = readTracker(ctx, source, node.TrackerKeys, asOf); err != nil {
 			return true, err
 		}
 	}
@@ -84,17 +84,17 @@ func (q *Quarter) trackerKeys() []string {
 type childCount struct{ done, total int }
 
 type trackerReadings struct {
-	issues   map[string]jirasource.Issue
+	issues   map[string]tracker.Issue
 	children map[string]childCount
 }
 
-func readTracker(ctx context.Context, tracker jirasource.Source, keys []string, asOf time.Time) (trackerReadings, error) {
+func readTracker(ctx context.Context, source tracker.Source, keys []string, asOf time.Time) (trackerReadings, error) {
 	out := trackerReadings{
-		issues:   map[string]jirasource.Issue{},
+		issues:   map[string]tracker.Issue{},
 		children: map[string]childCount{},
 	}
 
-	issues, err := tracker.GetIssuesByKeys(ctx, keys)
+	issues, err := source.GetIssuesByKeys(ctx, keys)
 	if err != nil {
 		return out, fmt.Errorf("fetch issues: %w", err)
 	}
@@ -103,7 +103,7 @@ func readTracker(ctx context.Context, tracker jirasource.Source, keys []string, 
 	}
 
 	for _, key := range keys {
-		children, err := tracker.GetChildIssues(ctx, key)
+		children, err := source.GetChildIssues(ctx, key)
 		if err != nil {
 			return out, fmt.Errorf("fetch child work items for %s: %w", key, err)
 		}
@@ -114,7 +114,7 @@ func readTracker(ctx context.Context, tracker jirasource.Source, keys []string, 
 	return out, nil
 }
 
-func countResolvedAsOf(children []jirasource.ChildIssue, asOf time.Time) childCount {
+func countResolvedAsOf(children []tracker.ChildIssue, asOf time.Time) childCount {
 	var count childCount
 	for _, c := range children {
 		if c.Created.IsZero() || c.Created.After(asOf) {
@@ -128,7 +128,7 @@ func countResolvedAsOf(children []jirasource.ChildIssue, asOf time.Time) childCo
 	return count
 }
 
-func categoryAsOf(issue jirasource.Issue, asOf time.Time) string {
+func categoryAsOf(issue tracker.Issue, asOf time.Time) string {
 	if issue.Created.IsZero() {
 		return issue.StatusCategory
 	}
@@ -234,7 +234,7 @@ func (n *Node) recordUnlinkedFromTracker(asOf time.Time) {
 	n.TrackerSnapshots = nil
 }
 
-func snapshotOf(issue jirasource.Issue, children childCount, asOf time.Time) TrackerSnapshot {
+func snapshotOf(issue tracker.Issue, children childCount, asOf time.Time) TrackerSnapshot {
 	progress := clampProgress(int(math.Round(categoryWeight(categoryAsOf(issue, asOf)) * 100)))
 	if children.total > 0 {
 		progress = percent(children.done, children.total)
@@ -267,7 +267,7 @@ func snapshotOf(issue jirasource.Issue, children childCount, asOf time.Time) Tra
 	return snapshot
 }
 
-func trackerHistory(issue jirasource.Issue, current Progress, asOf time.Time) []Update {
+func trackerHistory(issue tracker.Issue, current Progress, asOf time.Time) []Update {
 	point := func(t time.Time, progress Progress) Update {
 		return Update{
 			Date:     dateOf(t),

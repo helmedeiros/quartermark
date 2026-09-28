@@ -11,8 +11,8 @@ import (
 	"github.com/helmedeiros/quartermark/adapters/driven/okrdoc"
 	"github.com/helmedeiros/quartermark/adapters/driving/okrapi"
 	"github.com/helmedeiros/quartermark/app"
-	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/org"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
@@ -112,7 +112,7 @@ func (f *fakeStore) CreateTeam(_ context.Context, t org.Team) error {
 
 type noTracker struct{}
 
-func (noTracker) For(context.Context, string) (jirasource.Source, error) { return nil, nil }
+func (noTracker) For(context.Context, string) (tracker.Source, error) { return nil, nil }
 
 func mount(t *testing.T, store *fakeStore, tracker app.Tracker) *httptest.Server {
 	t.Helper()
@@ -259,14 +259,14 @@ func TestJiraRoutesReportUnconfiguredRatherThanFailing(t *testing.T) {
 	}
 }
 
-type stubJira struct{ issues map[string]jirasource.Issue }
+type stubJira struct{ issues map[string]tracker.Issue }
 
-func (s stubJira) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]jirasource.Issue, error) {
+func (s stubJira) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]tracker.Issue, error) {
 	return nil, nil
 }
 
-func (s stubJira) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasource.Issue, error) {
-	out := make([]jirasource.Issue, 0, len(keys))
+func (s stubJira) GetIssuesByKeys(_ context.Context, keys []string) ([]tracker.Issue, error) {
+	out := make([]tracker.Issue, 0, len(keys))
 	for _, k := range keys {
 		if issue, ok := s.issues[k]; ok {
 			out = append(out, issue)
@@ -275,17 +275,17 @@ func (s stubJira) GetIssuesByKeys(_ context.Context, keys []string) ([]jirasourc
 	return out, nil
 }
 
-func (s stubJira) GetChildIssues(context.Context, string) ([]jirasource.ChildIssue, error) {
+func (s stubJira) GetChildIssues(context.Context, string) ([]tracker.ChildIssue, error) {
 	return nil, nil
 }
 
-func (s stubJira) SearchIssuesByText(_ context.Context, _ string, _ int) ([]jirasource.IssueSummary, error) {
-	return []jirasource.IssueSummary{{Key: "PROJ-1", Summary: "Ship it", IssueType: "Epic"}}, nil
+func (s stubJira) SearchIssuesByText(_ context.Context, _ string, _ int) ([]tracker.IssueSummary, error) {
+	return []tracker.IssueSummary{{Key: "PROJ-1", Summary: "Ship it", IssueType: "Epic"}}, nil
 }
 
-type withTracker struct{ tracker jirasource.Source }
+type withTracker struct{ tracker tracker.Source }
 
-func (w withTracker) For(context.Context, string) (jirasource.Source, error) {
+func (w withTracker) For(context.Context, string) (tracker.Source, error) {
 	return w.tracker, nil
 }
 
@@ -296,7 +296,7 @@ func TestJiraRefreshWritesProgressBackIntoTheBlob(t *testing.T) {
 			{"id":"O-1","type":"objective","title":"Ship it","status":"not_started","progress":0,"jiraKeys":["PROJ-1"]}
 		]}
 	]}`)
-	jira := stubJira{issues: map[string]jirasource.Issue{
+	jira := stubJira{issues: map[string]tracker.Issue{
 		"PROJ-1": {Key: "PROJ-1", IssueType: "Epic", Status: "Done", StatusCategory: "done", Summary: "Ship it"},
 	}}
 	srv := mount(t, store, withTracker{tracker: jira})

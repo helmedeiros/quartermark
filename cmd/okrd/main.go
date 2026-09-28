@@ -14,7 +14,7 @@ import (
 	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
 	"github.com/helmedeiros/quartermark/adapters/driving/okrapi"
 	"github.com/helmedeiros/quartermark/app"
-	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/org"
 )
 
@@ -64,7 +64,7 @@ func run(addr, dbPath string, demo bool) error {
 	return nil
 }
 
-func newTrackerClient(config org.JiraConfig) jirasource.Source {
+func newTrackerClient(config org.JiraConfig) tracker.Source {
 	return jira.IngestAdapter{Client: jira.NewClient(config.BaseURL, config.Email, config.Token)}
 }
 

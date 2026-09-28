@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/helmedeiros/quartermark/adapters/driven/jira"
-	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
@@ -132,7 +132,7 @@ func TestIngestAdapter_GetChildIssues_MapsFields(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetChildIssues: %v", err)
 	}
-	want := jirasource.ChildIssue{
+	want := tracker.ChildIssue{
 		Created:  time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 		Resolved: timePtr(time.Date(2026, 1, 10, 0, 0, 0, 0, time.UTC)),
 	}
@@ -167,7 +167,7 @@ func TestIngestAdapter_SearchIssuesByText_MapsFields(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SearchIssuesByText: %v", err)
 	}
-	want := jirasource.IssueSummary{Key: "PROJ-1", Summary: "Ship the thing", IssueType: "Epic"}
+	want := tracker.IssueSummary{Key: "PROJ-1", Summary: "Ship the thing", IssueType: "Epic"}
 	if len(results) != 1 || results[0] != want {
 		t.Fatalf("unexpected mapped result: %+v", results)
 	}

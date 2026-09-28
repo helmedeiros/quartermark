@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/org"
 )
 
 const connectorsSection = "connectors"
 
-type BuildTracker func(config org.JiraConfig) jirasource.Source
+type BuildTracker func(config org.JiraConfig) tracker.Source
 
 type Resolver struct {
 	sections Sections
@@ -26,7 +26,7 @@ func New(sections Sections, build BuildTracker) *Resolver {
 	return &Resolver{sections: sections, build: build}
 }
 
-func (r *Resolver) For(ctx context.Context, teamSlug string) (jirasource.Source, error) {
+func (r *Resolver) For(ctx context.Context, teamSlug string) (tracker.Source, error) {
 	raw, ok, err := r.sections.GetSection(ctx, teamSlug, connectorsSection)
 	if err != nil || !ok {
 		return nil, err

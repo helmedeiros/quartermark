@@ -1,4 +1,4 @@
-package jirasource
+package tracker
 
 import (
 	"context"
