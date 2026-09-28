@@ -15,7 +15,6 @@ var layers = map[string][]string{
 	"storeerr":   {},
 	"timewindow": {},
 	"httpx":      {},
-	"jsontree":   {},
 	"app": {
 		"okr", "jirasource", "org", "storeerr", "timewindow",
 		"adapters/okrdoc",

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
 	"github.com/helmedeiros/quartermark/storeerr"
 	modernsqlite "modernc.org/sqlite"
@@ -23,8 +22,6 @@ const (
 )
 
 type Store struct{ db *sql.DB }
-
-var _ okr.Store = (*Store)(nil)
 
 func Open(path string) (*Store, error) {
 	db, err := sql.Open("sqlite", path)

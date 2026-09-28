@@ -18,8 +18,13 @@ const (
 	demoTeamName = "Atlas"
 )
 
-func loadDemo(ctx context.Context, store okr.Store) error {
-	teams, err := store.ListTeams(ctx)
+type demoStore interface {
+	okr.Teams
+	PutTeamBlob(ctx context.Context, teamSlug, section string, data []byte) error
+}
+
+func loadDemo(ctx context.Context, store demoStore) error {
+	teams, err := store.List(ctx)
 	if err != nil {
 		return fmt.Errorf("check for existing teams: %w", err)
 	}
@@ -28,7 +33,7 @@ func loadDemo(ctx context.Context, store okr.Store) error {
 		return nil
 	}
 
-	if err := store.CreateTeam(ctx, org.Team{Slug: demoTeamSlug, Name: demoTeamName}); err != nil {
+	if err := store.Create(ctx, org.Team{Slug: demoTeamSlug, Name: demoTeamName}); err != nil {
 		return fmt.Errorf("create the demo team: %w", err)
 	}
 	blob, _, err := okr.UpgradeBlob(demoOkrs)
