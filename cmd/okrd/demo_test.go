@@ -8,7 +8,6 @@ import (
 
 	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 func store(t *testing.T) *sqlite.Store {
@@ -88,7 +87,7 @@ func TestDemoDataIsSubstantialEnoughToDemonstrateTheApp(t *testing.T) {
 
 func TestLoadDemoRefusesADatabaseThatAlreadyHasTeams(t *testing.T) {
 	s, ctx := store(t), context.Background()
-	if err := s.CreateTeam(ctx, org.Team{Slug: "real", Name: "Real"}); err != nil {
+	if err := s.CreateTeam(ctx, okr.Team{Slug: "real", Name: "Real"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.PutTeamBlob(ctx, "real", "okrs", []byte(`{"schemaVersion":1,"quarters":[]}`)); err != nil {

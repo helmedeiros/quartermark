@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 	modernsqlite "modernc.org/sqlite"
 )
 
@@ -48,7 +47,7 @@ func isDuplicateKey(err error) bool {
 
 func nowRFC3339() string { return time.Now().UTC().Format(time.RFC3339) }
 
-func (s *Store) CreateTeam(ctx context.Context, t org.Team) error {
+func (s *Store) CreateTeam(ctx context.Context, t okr.Team) error {
 	if t.CreatedAt == "" {
 		t.CreatedAt = nowRFC3339()
 	}
@@ -61,18 +60,18 @@ func (s *Store) CreateTeam(ctx context.Context, t org.Team) error {
 	return err
 }
 
-func (s *Store) GetTeam(ctx context.Context, slug string) (org.Team, error) {
-	var t org.Team
+func (s *Store) GetTeam(ctx context.Context, slug string) (okr.Team, error) {
+	var t okr.Team
 	err := s.db.QueryRowContext(ctx,
 		`SELECT slug, name, created_at FROM teams WHERE slug = ?`, slug).
 		Scan(&t.Slug, &t.Name, &t.CreatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
-		return org.Team{}, okr.ErrNotFound
+		return okr.Team{}, okr.ErrNotFound
 	}
 	return t, err
 }
 
-func (s *Store) ListTeams(ctx context.Context) ([]org.Team, error) {
+func (s *Store) ListTeams(ctx context.Context) ([]okr.Team, error) {
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT slug, name, created_at FROM teams ORDER BY slug`)
 	if err != nil {
@@ -80,9 +79,9 @@ func (s *Store) ListTeams(ctx context.Context) ([]org.Team, error) {
 	}
 	defer func() { _ = rows.Close() }()
 
-	teams := []org.Team{}
+	teams := []okr.Team{}
 	for rows.Next() {
-		var t org.Team
+		var t okr.Team
 		if err := rows.Scan(&t.Slug, &t.Name, &t.CreatedAt); err != nil {
 			return nil, err
 		}

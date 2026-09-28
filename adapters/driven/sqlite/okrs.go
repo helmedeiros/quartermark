@@ -7,7 +7,6 @@ import (
 
 	"github.com/helmedeiros/quartermark/adapters/driven/okrdoc"
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 const okrsSection = "okrs"
@@ -64,12 +63,12 @@ func (s *Store) planWrittenOverStoredDocument(ctx context.Context, teamSlug stri
 
 var errNoStoredPlan = errors.New("no plan to save over")
 
-func (s *Store) List(ctx context.Context) ([]org.Team, error) { return s.ListTeams(ctx) }
+func (s *Store) List(ctx context.Context) ([]okr.Team, error) { return s.ListTeams(ctx) }
 
-func (s *Store) Get(ctx context.Context, slug string) (org.Team, error) {
+func (s *Store) Get(ctx context.Context, slug string) (okr.Team, error) {
 	return s.GetTeam(ctx, slug)
 }
 
-func (s *Store) Create(ctx context.Context, team org.Team) error {
+func (s *Store) Create(ctx context.Context, team okr.Team) error {
 	return s.CreateTeam(ctx, team)
 }

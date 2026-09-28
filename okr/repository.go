@@ -2,8 +2,6 @@ package okr
 
 import (
 	"context"
-
-	"github.com/helmedeiros/quartermark/org"
 )
 
 type Repository interface {
@@ -12,7 +10,7 @@ type Repository interface {
 }
 
 type Teams interface {
-	List(ctx context.Context) ([]org.Team, error)
-	Get(ctx context.Context, slug string) (org.Team, error)
-	Create(ctx context.Context, team org.Team) error
+	List(ctx context.Context) ([]Team, error)
+	Get(ctx context.Context, slug string) (Team, error)
+	Create(ctx context.Context, team Team) error
 }

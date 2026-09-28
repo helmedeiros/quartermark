@@ -8,7 +8,6 @@ import (
 	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/httpx"
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 const okrsSection = "okrs"
@@ -39,7 +38,7 @@ func listTeams(service *app.Service) http.HandlerFunc {
 
 func createTeam(service *app.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var team org.Team
+		var team okr.Team
 		if !httpx.DecodeJSON(w, r, &team) {
 			return
 		}

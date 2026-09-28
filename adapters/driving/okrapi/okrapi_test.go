@@ -13,17 +13,16 @@ import (
 	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/org"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
 type fakeStore struct {
-	teams map[string]org.Team
+	teams map[string]okr.Team
 	blobs map[string][]byte
 }
 
 func newFakeStore() *fakeStore {
-	return &fakeStore{teams: map[string]org.Team{}, blobs: map[string][]byte{}}
+	return &fakeStore{teams: map[string]okr.Team{}, blobs: map[string][]byte{}}
 }
 
 func blobKey(teamSlug, section string) string { return teamSlug + "/" + section }
@@ -36,13 +35,13 @@ func (f *fakeStore) PutSection(ctx context.Context, teamSlug, section string, da
 	return f.PutTeamBlob(ctx, teamSlug, section, data)
 }
 
-func (f *fakeStore) List(ctx context.Context) ([]org.Team, error) { return f.ListTeams(ctx) }
+func (f *fakeStore) List(ctx context.Context) ([]okr.Team, error) { return f.ListTeams(ctx) }
 
-func (f *fakeStore) Get(ctx context.Context, slug string) (org.Team, error) {
+func (f *fakeStore) Get(ctx context.Context, slug string) (okr.Team, error) {
 	return f.GetTeam(ctx, slug)
 }
 
-func (f *fakeStore) Create(ctx context.Context, t org.Team) error { return f.CreateTeam(ctx, t) }
+func (f *fakeStore) Create(ctx context.Context, t okr.Team) error { return f.CreateTeam(ctx, t) }
 
 func (f *fakeStore) Load(ctx context.Context, teamSlug string) (okr.TeamOkrs, bool, error) {
 	raw, ok, err := f.GetTeamBlob(ctx, teamSlug, "okrs")
@@ -86,23 +85,23 @@ func (f *fakeStore) PutTeamBlob(_ context.Context, teamSlug, section string, dat
 	return nil
 }
 
-func (f *fakeStore) ListTeams(context.Context) ([]org.Team, error) {
-	out := make([]org.Team, 0, len(f.teams))
+func (f *fakeStore) ListTeams(context.Context) ([]okr.Team, error) {
+	out := make([]okr.Team, 0, len(f.teams))
 	for _, t := range f.teams {
 		out = append(out, t)
 	}
 	return out, nil
 }
 
-func (f *fakeStore) GetTeam(_ context.Context, slug string) (org.Team, error) {
+func (f *fakeStore) GetTeam(_ context.Context, slug string) (okr.Team, error) {
 	t, ok := f.teams[slug]
 	if !ok {
-		return org.Team{}, okr.ErrNotFound
+		return okr.Team{}, okr.ErrNotFound
 	}
 	return t, nil
 }
 
-func (f *fakeStore) CreateTeam(_ context.Context, t org.Team) error {
+func (f *fakeStore) CreateTeam(_ context.Context, t okr.Team) error {
 	if _, exists := f.teams[t.Slug]; exists {
 		return okr.ErrAlreadyExists
 	}
@@ -156,7 +155,7 @@ func TestMountServesTheTeamRegistry(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("GET /teams = %d", resp.StatusCode)
 	}
-	var teams []org.Team
+	var teams []okr.Team
 	if err := json.NewDecoder(resp.Body).Decode(&teams); err != nil {
 		t.Fatal(err)
 	}

@@ -8,7 +8,6 @@ import (
 
 	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 func open(t *testing.T) *sqlite.Store {
@@ -27,7 +26,7 @@ func TestOpenIsIdempotentOnAnExistingDatabase(t *testing.T) {
 	if err != nil {
 		t.Fatalf("first open: %v", err)
 	}
-	if err := first.CreateTeam(context.Background(), org.Team{Slug: "acme", Name: "Acme"}); err != nil {
+	if err := first.CreateTeam(context.Background(), okr.Team{Slug: "acme", Name: "Acme"}); err != nil {
 		t.Fatal(err)
 	}
 	_ = first.Close()
@@ -45,10 +44,10 @@ func TestOpenIsIdempotentOnAnExistingDatabase(t *testing.T) {
 func TestTeamRegistryRoundTrip(t *testing.T) {
 	store, ctx := open(t), context.Background()
 
-	if err := store.CreateTeam(ctx, org.Team{Slug: "b-team", Name: "B"}); err != nil {
+	if err := store.CreateTeam(ctx, okr.Team{Slug: "b-team", Name: "B"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := store.CreateTeam(ctx, org.Team{Slug: "a-team", Name: "A"}); err != nil {
+	if err := store.CreateTeam(ctx, okr.Team{Slug: "a-team", Name: "A"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -79,7 +78,7 @@ func TestListTeamsIsEmptyNotNil(t *testing.T) {
 
 func TestCreateTeamTwiceReportsAlreadyExists(t *testing.T) {
 	store, ctx := open(t), context.Background()
-	team := org.Team{Slug: "acme", Name: "Acme"}
+	team := okr.Team{Slug: "acme", Name: "Acme"}
 	if err := store.CreateTeam(ctx, team); err != nil {
 		t.Fatal(err)
 	}

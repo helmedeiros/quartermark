@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/helmedeiros/quartermark/okr"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 //go:embed demo-okrs.json
@@ -33,7 +32,7 @@ func loadDemo(ctx context.Context, store demoStore) error {
 		return nil
 	}
 
-	if err := store.Create(ctx, org.Team{Slug: demoTeamSlug, Name: demoTeamName}); err != nil {
+	if err := store.Create(ctx, okr.Team{Slug: demoTeamSlug, Name: demoTeamName}); err != nil {
 		return fmt.Errorf("create the demo team: %w", err)
 	}
 	blob, _, err := okr.UpgradeBlob(demoOkrs)

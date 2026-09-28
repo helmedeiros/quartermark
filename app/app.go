@@ -8,7 +8,6 @@ import (
 
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 type Documents interface {
@@ -35,19 +34,19 @@ func New(plans okr.Repository, teams okr.Teams, documents Documents, tracker Tra
 	return &Service{plans: plans, teams: teams, documents: documents, tracker: tracker}
 }
 
-func (s *Service) ListTeams(ctx context.Context) ([]org.Team, error) {
+func (s *Service) ListTeams(ctx context.Context) ([]okr.Team, error) {
 	return s.teams.List(ctx)
 }
 
-func (s *Service) CreateTeam(ctx context.Context, team org.Team) (org.Team, error) {
+func (s *Service) CreateTeam(ctx context.Context, team okr.Team) (okr.Team, error) {
 	if team.Slug == "" || team.Name == "" {
-		return org.Team{}, fmt.Errorf("%w: a team needs both a slug and a name", ErrInvalidRequest)
+		return okr.Team{}, fmt.Errorf("%w: a team needs both a slug and a name", ErrInvalidRequest)
 	}
 	if team.CreatedAt == "" {
 		team.CreatedAt = time.Now().UTC().Format(time.RFC3339)
 	}
 	if err := s.teams.Create(ctx, team); err != nil {
-		return org.Team{}, err
+		return okr.Team{}, err
 	}
 	return team, nil
 }

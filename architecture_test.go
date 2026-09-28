@@ -9,13 +9,12 @@ import (
 const modulePath = "github.com/helmedeiros/quartermark"
 
 var layers = map[string][]string{
-	"okr":         {"okr/tracker", "org", "timewindow"},
+	"okr":         {"okr/tracker", "timewindow"},
 	"okr/tracker": {"timewindow"},
-	"org":         {},
 	"timewindow":  {},
 	"httpx":       {},
 	"app": {
-		"okr", "okr/tracker", "org", "timewindow",
+		"okr", "okr/tracker", "timewindow",
 		"adapters/driven/okrdoc",
 	},
 }
@@ -58,7 +57,7 @@ func TestEachLayerDependsOnlyOnWhatItIsAllowedTo(t *testing.T) {
 }
 
 func TestTheDomainReachesNoAdapter(t *testing.T) {
-	for _, pkg := range []string{"okr", "okr/tracker", "org", "timewindow"} {
+	for _, pkg := range []string{"okr", "okr/tracker", "timewindow"} {
 		for _, dep := range dependenciesOf(t, pkg) {
 			if strings.HasPrefix(dep, "adapters/") || strings.HasPrefix(dep, "cmd/") {
 				t.Errorf("%s reaches outward to %s", pkg, dep)

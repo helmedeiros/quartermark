@@ -6,12 +6,11 @@ import (
 	"fmt"
 
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/org"
 )
 
 const connectorsSection = "connectors"
 
-type BuildTracker func(config org.JiraConfig) tracker.Source
+type BuildTracker func(config JiraConfig) tracker.Source
 
 type Resolver struct {
 	sections Sections
@@ -32,7 +31,7 @@ func (r *Resolver) For(ctx context.Context, teamSlug string) (tracker.Source, er
 		return nil, err
 	}
 
-	var config org.Connectors
+	var config Connectors
 	if err := json.Unmarshal(raw, &config); err != nil {
 		return nil, fmt.Errorf("parse connector config for %s: %w", teamSlug, err)
 	}
@@ -42,6 +41,6 @@ func (r *Resolver) For(ctx context.Context, teamSlug string) (tracker.Source, er
 	return r.build(*config.Jira), nil
 }
 
-func configuredForTracking(config *org.JiraConfig) bool {
+func configuredForTracking(config *JiraConfig) bool {
 	return config != nil && config.BaseURL != "" && config.Token != ""
 }

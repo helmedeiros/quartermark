@@ -1,10 +1,4 @@
-package org
-
-type Team struct {
-	Slug      string `json:"slug"`
-	Name      string `json:"name"`
-	CreatedAt string `json:"createdAt"`
-}
+package connectors
 
 type Connectors struct {
 	Jira            *JiraConfig            `json:"jira,omitempty"`
