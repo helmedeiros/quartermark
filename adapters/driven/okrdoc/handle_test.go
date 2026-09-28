@@ -184,7 +184,7 @@ func TestApplyRefusesAQuarterTheDocumentDoesNotHave(t *testing.T) {
 }
 
 func TestTheRealDocumentsSurviveAFullDomainRoundTrip(t *testing.T) {
-	paths := []string{filepath.Join("..", "..", "demo", "okrs.json")}
+	paths := []string{filepath.Join("..", "..", "..", "demo", "okrs.json")}
 	if p := os.Getenv("QUARTERMARK_DOC"); p != "" {
 		paths = append(paths, p)
 	}

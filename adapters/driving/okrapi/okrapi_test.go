@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/helmedeiros/quartermark/adapters/okrapi"
-	"github.com/helmedeiros/quartermark/adapters/okrdoc"
+	"github.com/helmedeiros/quartermark/adapters/driven/okrdoc"
+	"github.com/helmedeiros/quartermark/adapters/driving/okrapi"
 	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"

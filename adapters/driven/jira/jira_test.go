@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/helmedeiros/quartermark/adapters/jira"
+	"github.com/helmedeiros/quartermark/adapters/driven/jira"
 )
 
 func fakeStatusList(w http.ResponseWriter) {

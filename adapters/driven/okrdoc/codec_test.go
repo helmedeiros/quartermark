@@ -136,8 +136,8 @@ func TestRoundTripKeepsExplicitZeroes(t *testing.T) {
 
 func TestRoundTripPreservesTheRealDocuments(t *testing.T) {
 	for _, path := range []string{
-		filepath.Join("..", "..", "demo", "okrs.json"),
-		filepath.Join("..", "..", "cmd", "okrd", "demo-okrs.json"),
+		filepath.Join("..", "..", "..", "demo", "okrs.json"),
+		filepath.Join("..", "..", "..", "cmd", "okrd", "demo-okrs.json"),
 	} {
 		t.Run(filepath.Base(filepath.Dir(path))+"/"+filepath.Base(path), func(t *testing.T) {
 			raw, err := os.ReadFile(path)

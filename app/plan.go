@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/helmedeiros/quartermark/adapters/okrdoc"
+	"github.com/helmedeiros/quartermark/adapters/driven/okrdoc"
 	"github.com/helmedeiros/quartermark/okr"
 )
 
