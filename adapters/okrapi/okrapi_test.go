@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/helmedeiros/quartermark/adapters/okrapi"
+	"github.com/helmedeiros/quartermark/adapters/okrdoc"
+	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
@@ -29,6 +31,54 @@ func newFakeStore() *fakeStore {
 }
 
 func blobKey(teamSlug, section string) string { return teamSlug + "/" + section }
+
+func (f *fakeStore) GetSection(ctx context.Context, teamSlug, section string) ([]byte, bool, error) {
+	return f.GetTeamBlob(ctx, teamSlug, section)
+}
+
+func (f *fakeStore) PutSection(ctx context.Context, teamSlug, section string, data []byte) error {
+	return f.PutTeamBlob(ctx, teamSlug, section, data)
+}
+
+func (f *fakeStore) List(ctx context.Context) ([]org.Team, error) { return f.ListTeams(ctx) }
+
+func (f *fakeStore) Get(ctx context.Context, slug string) (org.Team, error) {
+	return f.GetTeam(ctx, slug)
+}
+
+func (f *fakeStore) Create(ctx context.Context, t org.Team) error { return f.CreateTeam(ctx, t) }
+
+func (f *fakeStore) Load(ctx context.Context, teamSlug string) (okr.TeamOkrs, bool, error) {
+	raw, ok, err := f.GetTeamBlob(ctx, teamSlug, "okrs")
+	if err != nil || !ok {
+		return okr.TeamOkrs{}, ok, err
+	}
+	doc, err := okrdoc.Parse(raw)
+	if err != nil {
+		return okr.TeamOkrs{}, true, err
+	}
+	plan, err := doc.Domain()
+	return plan, true, err
+}
+
+func (f *fakeStore) Save(ctx context.Context, teamSlug string, plan okr.TeamOkrs) error {
+	raw, ok, err := f.GetTeamBlob(ctx, teamSlug, "okrs")
+	if err != nil || !ok {
+		return err
+	}
+	doc, err := okrdoc.Parse(raw)
+	if err != nil {
+		return err
+	}
+	if err := doc.Apply(plan); err != nil {
+		return err
+	}
+	updated, err := doc.Bytes()
+	if err != nil {
+		return err
+	}
+	return f.PutTeamBlob(ctx, teamSlug, "okrs", updated)
+}
 
 func (f *fakeStore) GetTeamBlob(_ context.Context, teamSlug, section string) ([]byte, bool, error) {
 	b, ok := f.blobs[blobKey(teamSlug, section)]
@@ -64,17 +114,14 @@ func (f *fakeStore) CreateTeam(_ context.Context, t org.Team) error {
 	return nil
 }
 
-// noJira is the normal state for a team that does OKRs without Jira.
-type noJira struct{}
+type noTracker struct{}
 
-func (noJira) Jira(context.Context, string) (jirasource.Source, error) { return nil, nil }
+func (noTracker) For(context.Context, string) (jirasource.Source, error) { return nil, nil }
 
-// mount builds exactly what a host application builds: a bare mux with
-// the module's routes on it and nothing else.
-func mount(t *testing.T, store okr.Store, resolver okrapi.JiraResolver) *httptest.Server {
+func mount(t *testing.T, store *fakeStore, tracker app.Tracker) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
-	okrapi.Mount(mux, store, resolver)
+	okrapi.Mount(mux, app.New(store, store, store, tracker))
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	return srv
@@ -103,7 +150,7 @@ func do(t *testing.T, srv *httptest.Server, method, path, body string) *http.Res
 
 func TestMountServesTheTeamRegistry(t *testing.T) {
 	store := newFakeStore()
-	srv := mount(t, store, noJira{})
+	srv := mount(t, store, noTracker{})
 
 	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`).StatusCode; got != http.StatusCreated {
 		t.Fatalf("POST /teams = %d, want 201", got)
@@ -123,7 +170,7 @@ func TestMountServesTheTeamRegistry(t *testing.T) {
 }
 
 func TestCreatingTheSameTeamTwiceConflicts(t *testing.T) {
-	srv := mount(t, newFakeStore(), noJira{})
+	srv := mount(t, newFakeStore(), noTracker{})
 	do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`)
 
 	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme","name":"Acme Squad"}`).StatusCode; got != http.StatusConflict {
@@ -132,14 +179,14 @@ func TestCreatingTheSameTeamTwiceConflicts(t *testing.T) {
 }
 
 func TestTeamRequiresSlugAndName(t *testing.T) {
-	srv := mount(t, newFakeStore(), noJira{})
+	srv := mount(t, newFakeStore(), noTracker{})
 	if got := do(t, srv, http.MethodPost, "/teams", `{"slug":"acme"}`).StatusCode; got != http.StatusBadRequest {
 		t.Fatalf("POST /teams without a name = %d, want 400", got)
 	}
 }
 
 func TestBlobRoundTripAndMissingSection(t *testing.T) {
-	srv := mount(t, newFakeStore(), noJira{})
+	srv := mount(t, newFakeStore(), noTracker{})
 
 	if got := do(t, srv, http.MethodGet, "/teams/acme/blobs/routines", "").StatusCode; got != http.StatusNotFound {
 		t.Fatalf("GET of an absent section = %d, want 404", got)
@@ -159,7 +206,7 @@ func TestBlobRoundTripAndMissingSection(t *testing.T) {
 
 func TestOkrsBlobIsStampedOnWrite(t *testing.T) {
 	store := newFakeStore()
-	srv := mount(t, store, noJira{})
+	srv := mount(t, store, noTracker{})
 
 	do(t, srv, http.MethodPut, "/teams/acme/blobs/okrs", `{"team":"Acme","quarters":[]}`)
 
@@ -170,7 +217,7 @@ func TestOkrsBlobIsStampedOnWrite(t *testing.T) {
 }
 
 func TestFutureVersionOkrsBlobConflicts(t *testing.T) {
-	srv := mount(t, newFakeStore(), noJira{})
+	srv := mount(t, newFakeStore(), noTracker{})
 	body := `{"schemaVersion":9999,"quarters":[]}`
 	if got := do(t, srv, http.MethodPut, "/teams/acme/blobs/okrs", body).StatusCode; got != http.StatusConflict {
 		t.Fatalf("PUT of a future-version blob = %d, want 409", got)
@@ -181,10 +228,12 @@ func TestSettingsExposesTheJiraHostButNotTheToken(t *testing.T) {
 	store := newFakeStore()
 	store.blobs[blobKey("acme", "connectors")] = []byte(
 		`{"jira":{"baseUrl":"https://example.atlassian.net","email":"bot@example.com","token":"secret-token"}}`)
-	srv := mount(t, store, noJira{})
+	srv := mount(t, store, noTracker{})
 
 	resp := do(t, srv, http.MethodGet, "/teams/acme/okr-settings", "")
-	var got okrapi.Settings
+	var got struct {
+		JiraBaseURL string `json:"jiraBaseUrl"`
+	}
 	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +255,7 @@ func TestSettingsExposesTheJiraHostButNotTheToken(t *testing.T) {
 // A team with no Jira connector is a normal state, not a failure — but a
 // refresh it cannot perform must say so rather than pretend it worked.
 func TestJiraRoutesReportUnconfiguredRatherThanFailing(t *testing.T) {
-	srv := mount(t, newFakeStore(), noJira{})
+	srv := mount(t, newFakeStore(), noTracker{})
 
 	for _, tc := range []struct{ method, path string }{
 		{http.MethodPost, "/teams/acme/okrs/jira-refresh"},
@@ -243,19 +292,23 @@ func (s stubJira) SearchIssuesByText(_ context.Context, _ string, _ int) ([]jira
 	return []jirasource.IssueSummary{{Key: "PROJ-1", Summary: "Ship it", IssueType: "Epic"}}, nil
 }
 
-type withJira struct{ jira jirasource.Source }
+type withTracker struct{ tracker jirasource.Source }
 
-func (w withJira) Jira(context.Context, string) (jirasource.Source, error) { return w.jira, nil }
+func (w withTracker) For(context.Context, string) (jirasource.Source, error) {
+	return w.tracker, nil
+}
 
 func TestJiraRefreshWritesProgressBackIntoTheBlob(t *testing.T) {
 	store := newFakeStore()
 	store.blobs[blobKey("acme", "okrs")] = []byte(`{"team":"Acme","quarters":[
-		{"quarterId":"2026-q3","objectives":[{"id":"O-1","jiraKeys":["PROJ-1"]}]}
+		{"quarterId":"2026-q3","objectives":[
+			{"id":"O-1","type":"objective","title":"Ship it","status":"not_started","progress":0,"jiraKeys":["PROJ-1"]}
+		]}
 	]}`)
 	jira := stubJira{issues: map[string]jirasource.Issue{
 		"PROJ-1": {Key: "PROJ-1", IssueType: "Epic", Status: "Done", StatusCategory: "done", Summary: "Ship it"},
 	}}
-	srv := mount(t, store, withJira{jira: jira})
+	srv := mount(t, store, withTracker{tracker: jira})
 
 	resp := do(t, srv, http.MethodPost, "/teams/acme/okrs/jira-refresh", `{"force":true}`)
 	if resp.StatusCode != http.StatusOK {
@@ -284,7 +337,7 @@ func TestJiraRefreshWritesProgressBackIntoTheBlob(t *testing.T) {
 }
 
 func TestJiraSearchReturnsMatches(t *testing.T) {
-	srv := mount(t, newFakeStore(), withJira{jira: stubJira{}})
+	srv := mount(t, newFakeStore(), withTracker{tracker: stubJira{}})
 
 	resp := do(t, srv, http.MethodGet, "/teams/acme/okrs/jira-search?q=PROJ", "")
 	if resp.StatusCode != http.StatusOK {
@@ -298,7 +351,7 @@ func TestJiraSearchReturnsMatches(t *testing.T) {
 }
 
 func TestJiraRefreshOnAnAbsentBlobIsNotFound(t *testing.T) {
-	srv := mount(t, newFakeStore(), withJira{jira: stubJira{}})
+	srv := mount(t, newFakeStore(), withTracker{tracker: stubJira{}})
 	if got := do(t, srv, http.MethodPost, "/teams/acme/okrs/jira-refresh", `{}`).StatusCode; got != http.StatusNotFound {
 		t.Fatalf("refresh with no okrs blob = %d, want 404", got)
 	}

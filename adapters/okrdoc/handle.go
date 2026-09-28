@@ -50,6 +50,7 @@ func (d *Document) Domain() (okr.TeamOkrs, error) {
 // and silently inventing a node would hide a bug in whatever produced
 // the domain object.
 func (d *Document) Apply(team okr.TeamOkrs) error {
+	d.doc.SchemaVersion = okr.SchemaVersion
 	d.doc.Team = team.Team
 	d.doc.Clusters = team.Clusters
 

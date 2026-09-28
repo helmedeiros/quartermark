@@ -19,6 +19,7 @@ import (
 	"github.com/helmedeiros/quartermark/adapters/connectors"
 	"github.com/helmedeiros/quartermark/adapters/okrapi"
 	"github.com/helmedeiros/quartermark/adapters/sqlite"
+	"github.com/helmedeiros/quartermark/app"
 )
 
 const (
@@ -51,7 +52,8 @@ func run(addr, dbPath string, demo bool) error {
 	}
 
 	mux := http.NewServeMux()
-	okrapi.Mount(mux, store, connectors.New(store))
+	resolver := connectors.New(store)
+	okrapi.Mount(mux, app.New(store, store, store, resolver))
 
 	log.Printf("quartermark listening on http://%s (database: %s)", addr, dbPath)
 	// The API is mounted at /api to match how the frontend proxies it.
