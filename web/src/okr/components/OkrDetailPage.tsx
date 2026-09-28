@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTeamBlob } from "../../api/useTeamBlob";
 import { initials } from "../../lib/format";
 import { yearWeekRangeLabel } from "../../lib/ganttLayout";
-import { jiraTicketUrl } from "../jira";
+import { jiraTicketUrl } from "../adapters/outbound/jira";
 import { markdownToHtml } from "../../lib/markdown";
 import {
   applyMarkdownAction,

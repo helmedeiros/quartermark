@@ -30,7 +30,7 @@ import {
   type OkrColumnKey,
 } from "../okrTableColumns";
 import { formatRelativeTime, initials } from "../../lib/format";
-import { jiraTicketUrl } from "../jira";
+import { jiraTicketUrl } from "../adapters/outbound/jira";
 import { ClusterChip } from "./ClusterChip";
 import { useClusters } from "../useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";

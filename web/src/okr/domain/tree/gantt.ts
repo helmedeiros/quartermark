@@ -2,7 +2,7 @@ import type { OkrNode, OkrStatus, Quarter } from "../model";
 import type { DateWindow } from "../../../lib/dateWindow";
 import type { GanttRow } from "../../../lib/ganttLayout";
 import { yearWeekLabel } from "../../../lib/ganttLayout";
-import { jiraTicketUrl } from "../../jira";
+import { jiraTicketUrl } from "../../adapters/outbound/jira";
 import { effectiveDateRange } from "./auto";
 
 function okrLink(teamSlug: string, quarterId: string, nodeId: string): string {

@@ -5,7 +5,7 @@ import { api } from "../../api/client";
 import { useTeamBlob } from "../../api/useTeamBlob";
 import { formatRelativeTime } from "../../lib/format";
 import { useOkrConfig } from "../config";
-import { downloadWorkbook } from "../okrExportWorkbook";
+import { downloadWorkbook } from "../adapters/outbound/okrExportWorkbook";
 import { collectLabels, collectOwners } from "../domain/tree";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrQuarterSummary } from "./OkrQuarterSummary";
