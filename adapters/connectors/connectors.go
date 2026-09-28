@@ -1,10 +1,3 @@
-// Package connectors builds a team's Jira client from its stored
-// configuration, resolved per request rather than once at boot.
-//
-// Per request because connector settings are edited through the running
-// application: a process-global client built at startup would keep using
-// the old credentials until someone restarted the server, which is a
-// confusing thing to debug.
 package connectors
 
 import (
@@ -24,9 +17,6 @@ type Resolver struct{ store okr.Store }
 
 func New(store okr.Store) *Resolver { return &Resolver{store: store} }
 
-// Jira returns nil, nil when the team has no Jira configured. That is a
-// normal state — a team can plan without it — so callers report it as
-// "not configured" rather than as a failure.
 func (r *Resolver) Jira(ctx context.Context, teamSlug string) (jirasource.Source, error) {
 	raw, ok, err := r.store.GetTeamBlob(ctx, teamSlug, connectorsSection)
 	if err != nil || !ok {

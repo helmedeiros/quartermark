@@ -1,10 +1,3 @@
-// Command okrd serves the Quartermark API and, in a standalone install,
-// nothing else — the frontend is served separately in development and
-// as static files in production.
-//
-// It binds loopback by default. Quarter plans name people and unshipped
-// work, so the safe default is "reachable from this machine only"; an
-// operator who wants otherwise has to say so explicitly.
 package main
 
 import (
@@ -56,7 +49,6 @@ func run(addr, dbPath string, demo bool) error {
 	okrapi.Mount(mux, app.New(store, store, store, resolver))
 
 	log.Printf("quartermark listening on http://%s (database: %s)", addr, dbPath)
-	// The API is mounted at /api to match how the frontend proxies it.
 	root := http.NewServeMux()
 	root.Handle("/api/", http.StripPrefix("/api", mux))
 

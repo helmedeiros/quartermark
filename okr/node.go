@@ -5,9 +5,6 @@ import (
 	"time"
 )
 
-// Update is a dated observation of where a node stood. Kept as history
-// rather than overwritten, so a closed quarter can still answer "when
-// did we know this was slipping".
 type Update struct {
 	Date     Date
 	Status   Status
@@ -16,8 +13,6 @@ type Update struct {
 	Author   string
 }
 
-// Note is the written half of a check-in — the part a number cannot
-// carry.
 type Note struct {
 	Date      Date
 	Author    string
@@ -26,17 +21,11 @@ type Note struct {
 	NextSteps string
 }
 
-// MetricPoint is one reading of a key result's metric over time.
 type MetricPoint struct {
 	Date    Date
 	Current float64
 }
 
-// Metric is a key result's measurable target. A concept in its own
-// right — a number with no type cannot be formatted and no unit cannot
-// be read — so it is present or absent as a whole. Target and current
-// stay optional within it: a key result can have a target before anyone
-// has measured against it.
 type Metric struct {
 	Type    MetricType
 	Target  *float64
@@ -44,9 +33,6 @@ type Metric struct {
 	Unit    string
 }
 
-// TrackerSnapshot is what the issue tracker last said about one linked
-// issue. A snapshot, not a live read: a closed quarter must keep
-// reporting what was true then, not what is true now.
 type TrackerSnapshot struct {
 	Key       string
 	Summary   string
@@ -67,9 +53,6 @@ type Sprint struct {
 	End   Date
 }
 
-// Node is an objective, a key result or a milestone. One type rather
-// than three because the tree is walked far more often than a single
-// level is inspected, and the parts that differ are optional anyway.
 type Node struct {
 	ID    string
 	Type  NodeType
@@ -92,11 +75,6 @@ type Node struct {
 
 	Metric *Metric
 
-	// Three independent optionals rather than one "sizing" concept.
-	// Objectives carry dates without effort, and a milestone may be
-	// dated before it is estimated; grouping them would invent a
-	// presence question the document does not have, and turn an absent
-	// effort into a zero one on the way back out.
 	Start       Date
 	Due         Date
 	EffortWeeks *float64
@@ -114,8 +92,6 @@ type Node struct {
 	Children []Node
 }
 
-// NewNode builds a node with the fields nothing is valid without. The
-// rest are set on the result; only these four have no sensible zero.
 func NewNode(id string, t NodeType, title string, status Status) (Node, error) {
 	if id == "" {
 		return Node{}, fmt.Errorf("okr: a node needs an id")
@@ -132,8 +108,6 @@ func NewNode(id string, t NodeType, title string, status Status) (Node, error) {
 	return Node{ID: id, Type: t, Title: title, Status: status}, nil
 }
 
-// Validate checks the whole subtree: the invariants a single
-// constructor cannot see, because they are about how nodes relate.
 func (n Node) Validate() error {
 	seen := map[string]bool{}
 	return n.validate(seen)
@@ -144,9 +118,6 @@ func (n Node) validate(seen map[string]bool) error {
 		return fmt.Errorf("okr: a node needs an id")
 	}
 	if seen[n.ID] {
-		// Ids address nodes in URLs and in the tracker link map. Two
-		// nodes sharing one means an edit lands on whichever the walk
-		// reached first.
 		return fmt.Errorf("okr: duplicate node id %q", n.ID)
 	}
 	seen[n.ID] = true
@@ -172,9 +143,6 @@ func (n Node) validate(seen map[string]bool) error {
 	return nil
 }
 
-// Walk visits this node and every descendant, depth first. The callback
-// takes a pointer so a caller can change what it visits — which is what
-// a tracker refresh does.
 func (n *Node) Walk(visit func(*Node)) {
 	visit(n)
 	for i := range n.Children {
@@ -182,7 +150,6 @@ func (n *Node) Walk(visit func(*Node)) {
 	}
 }
 
-// Find returns the node with the given id, or nil.
 func (n *Node) Find(id string) *Node {
 	var found *Node
 	n.Walk(func(candidate *Node) {

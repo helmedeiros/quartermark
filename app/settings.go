@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-// parseSettings reads only the one non-secret field out of the
-// connector record.
-//
-// Decoding just that field, rather than the whole record and then
-// picking, means a token cannot leak later because someone added a
-// field next to it.
 func parseSettings(raw []byte) (Settings, error) {
 	var record struct {
 		Jira struct {

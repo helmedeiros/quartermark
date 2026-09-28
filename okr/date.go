@@ -5,14 +5,7 @@ import (
 	"time"
 )
 
-// Date is a calendar day with no time and no zone.
-//
-// A quarter is planned in days: a milestone is due on the 14th, not at
-// an instant. Using time.Time for that invites a timezone to decide
-// whether a deadline fell on Friday or Saturday, which is how a bar
-// moves a day when the viewer travels.
 type Date struct {
-	// Zero value means "not set", which most dates on a node are.
 	year  int
 	month time.Month
 	day   int
@@ -21,18 +14,17 @@ type Date struct {
 const dateLayout = "2006-01-02"
 
 func NewDate(year int, month time.Month, day int) (Date, error) {
-	// time.Date normalises out-of-range parts (month 13 becomes January
-	// of the next year) rather than complaining, so round-tripping is
-	// the check.
-	t := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
-	if t.Year() != year || t.Month() != month || t.Day() != day {
+	if wasNormalisedIntoADifferentDay(year, month, day) {
 		return Date{}, fmt.Errorf("okr: %04d-%02d-%02d is not a date", year, month, day)
 	}
 	return Date{year: year, month: month, day: day}, nil
 }
 
-// ParseDate reads the ISO form. An empty string is the zero Date rather
-// than an error: most dates on a node are genuinely unset.
+func wasNormalisedIntoADifferentDay(year int, month time.Month, day int) bool {
+	t := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+	return t.Year() != year || t.Month() != month || t.Day() != day
+}
+
 func ParseDate(s string) (Date, error) {
 	if s == "" {
 		return Date{}, nil
@@ -46,8 +38,6 @@ func ParseDate(s string) (Date, error) {
 
 func (d Date) IsZero() bool { return d.year == 0 && d.month == 0 && d.day == 0 }
 
-// String is the ISO form, or empty for an unset date — which is what a
-// serializer wants to write back.
 func (d Date) String() string {
 	if d.IsZero() {
 		return ""

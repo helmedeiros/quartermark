@@ -1,11 +1,3 @@
-// Package jirasource is the port through which the rest of the system
-// reads Jira, plus the data it reads back.
-//
-// It holds no HTTP and no persistence: internal/adapters/jira implements
-// the interface, internal/ingest uses it for delivery metrics, and
-// internal/okr uses it for OKR progress. Keeping the port here is what
-// lets the OKR side depend on Jira without depending on the delivery
-// metrics pipeline it has nothing to do with.
 package jirasource
 
 import (
@@ -34,8 +26,6 @@ type Sprint struct {
 	EndDate   *time.Time
 }
 
-// ChildIssue is deliberately thinner than Issue: progress roll-up only
-// needs to know how many children exist and when each was resolved.
 type ChildIssue struct {
 	Created  time.Time
 	Resolved *time.Time

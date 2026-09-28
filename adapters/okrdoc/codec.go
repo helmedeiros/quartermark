@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-// decodeDocument reads the stored JSON into the document structs,
-// capturing at every level the members no field claimed.
-//
-// Hand-rolled rather than one json.Unmarshal because the nested levels
-// each need their own unclaimed members kept. Letting the decoder do it
-// in one pass would throw away exactly what this package protects.
 func decodeDocument(raw []byte) (document, error) {
 	var doc document
 	e, err := splitExtras(raw, &doc, documentKnown)
@@ -97,8 +91,6 @@ func decodeNode(raw []byte) (nodeDoc, error) {
 	return n, nil
 }
 
-// encodeDocument writes the document back, folding the unclaimed
-// members of every level in as it goes.
 func encodeDocument(doc document) ([]byte, error) {
 	quarters := make([]json.RawMessage, 0, len(doc.Quarters))
 	for _, q := range doc.Quarters {
@@ -109,8 +101,6 @@ func encodeDocument(doc document) ([]byte, error) {
 		quarters = append(quarters, encoded)
 	}
 
-	// The nested levels are already encoded, so the outer struct is
-	// marshalled with them held aside and spliced back in.
 	type alias document
 	shell := struct {
 		alias

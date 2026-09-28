@@ -5,20 +5,14 @@ import (
 	"time"
 )
 
-// Quarter is a planning period and the objectives committed to it.
 type Quarter struct {
 	ID    string
 	Label string
 	Start Date
 	End   Date
 
-	// Locked marks a quarter as closed. A closed quarter is history: it
-	// should keep reporting what was true at the time rather than being
-	// quietly re-scored by a later refresh.
 	Locked bool
 
-	// Capacity is how many people the quarter is planned against, used
-	// to tell an over-committed week from a full one.
 	Capacity *float64
 
 	TrackerRefreshedAt time.Time
@@ -45,9 +39,6 @@ func (q Quarter) Validate() error {
 		return fmt.Errorf("okr: quarter %s ends (%s) before it starts (%s)", q.ID, q.End, q.Start)
 	}
 
-	// Ids are unique across the quarter, not merely within one
-	// objective: a URL names a node without saying which tree it sits
-	// in, and the tracker link map is keyed the same way.
 	seen := map[string]bool{}
 	for _, o := range q.Objectives {
 		if o.Type != Objective {
@@ -60,7 +51,6 @@ func (q Quarter) Validate() error {
 	return nil
 }
 
-// Walk visits every node in the quarter.
 func (q *Quarter) Walk(visit func(*Node)) {
 	for i := range q.Objectives {
 		q.Objectives[i].Walk(visit)
@@ -77,14 +67,9 @@ func (q *Quarter) Find(id string) *Node {
 	return found
 }
 
-// TeamOkrs is everything one team plans: its quarters and the
-// vocabulary it groups objectives under.
 type TeamOkrs struct {
 	Team string
 
-	// Clusters is the team's own strategic themes. Empty means the
-	// caller's default applies — the domain does not carry one, because
-	// a default set of themes is a product opinion, not a rule.
 	Clusters []string
 
 	Quarters []Quarter
@@ -104,7 +89,6 @@ func (t TeamOkrs) Validate() error {
 	return nil
 }
 
-// Quarter returns the quarter with the given id, or nil.
 func (t *TeamOkrs) Quarter(id string) *Quarter {
 	for i := range t.Quarters {
 		if t.Quarters[i].ID == id {

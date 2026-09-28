@@ -487,14 +487,8 @@ func (c *Client) fetchStatusCategories(ctx context.Context) (map[string]string, 
 	return out, nil
 }
 
-// sprintCustomFieldSchema is the schema.custom value Jira Cloud assigns to
-// the built-in "Sprint" field on every Agile-enabled board, regardless of
-// what the field happens to be named or renamed to on a given instance.
 const sprintCustomFieldSchema = "com.pyxis.greenhopper.jira:gh-sprint"
 
-// resolvedSprintFieldID returns the custom field id (e.g. "customfield_10020")
-// for the board's Sprint field, or "" if this Jira instance has none (not
-// Agile-enabled). Discovered once and cached, mirroring statusCategoriesByID.
 func (c *Client) resolvedSprintFieldID(ctx context.Context) string {
 	c.sprintFieldOnce.Do(func() {
 		c.sprintFieldID, c.sprintFieldErr = c.fetchSprintFieldID(ctx)
@@ -528,9 +522,6 @@ func (c *Client) fetchSprintFieldID(ctx context.Context) (string, error) {
 	return "", nil
 }
 
-// jiraSprintField is one entry of the Sprint custom field's array value, as
-// returned inline by the classic search API (no separate Agile API call
-// needed — Jira Cloud already includes each sprint's own date range here).
 type jiraSprintField struct {
 	Name      string    `json:"name"`
 	StartDate *jiraTime `json:"startDate"`

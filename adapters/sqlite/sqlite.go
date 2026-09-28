@@ -1,8 +1,3 @@
-// Package sqlite is a SQLite-backed okr.Store.
-//
-// It is a reference implementation, not the only one: the port is five
-// methods wide precisely so a host application can satisfy it with
-// whatever storage it already has.
 package sqlite
 
 import (
@@ -22,10 +17,6 @@ import (
 //go:embed schema.sql
 var schemaSQL string
 
-// SQLite extended result codes for a duplicate-key insert. A UNIQUE
-// column reports one; a TEXT PRIMARY KEY column (as teams.slug is)
-// reports the other. modernc.org/sqlite does not export either, so they
-// are pinned here rather than matched on message text.
 const (
 	sqliteConstraintUnique     = 2067
 	sqliteConstraintPrimaryKey = 1555
@@ -40,8 +31,6 @@ func Open(path string) (*Store, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open sqlite: %w", err)
 	}
-	// One writer. SQLite serialises writes anyway, and a larger pool
-	// only converts that into SQLITE_BUSY for the caller to handle.
 	db.SetMaxOpenConns(1)
 	if _, err := db.ExecContext(context.Background(), schemaSQL); err != nil {
 		_ = db.Close()
@@ -94,8 +83,6 @@ func (s *Store) ListTeams(ctx context.Context) ([]org.Team, error) {
 	}
 	defer func() { _ = rows.Close() }()
 
-	// Never nil: an empty list is [] on the wire, not null, so no client
-	// has to special-case the fresh-install case.
 	teams := []org.Team{}
 	for rows.Next() {
 		var t org.Team

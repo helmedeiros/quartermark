@@ -2,13 +2,6 @@ package okr
 
 import "fmt"
 
-// The vocabulary of a quarter, as types that cannot hold a value outside
-// it.
-//
-// Parsing happens once, at the edge. Everything inside is then free to
-// switch on these without a default case that wonders what to do — which
-// is the difference between a domain model and a map with opinions.
-
 type NodeType string
 
 const (
@@ -25,13 +18,6 @@ func ParseNodeType(s string) (NodeType, error) {
 	return "", fmt.Errorf("okr: %q is not a node type", s)
 }
 
-// CanContain reports whether a node of this type may hold one of the
-// other.
-//
-// An objective holds anything: sub-objectives are how a large bet is
-// broken up, and a milestone hangs directly off one when the work has
-// no measurable key result of its own. A key result holds milestones.
-// A milestone is a leaf.
 func (t NodeType) CanContain(child NodeType) bool {
 	switch t {
 	case Objective:
@@ -96,9 +82,6 @@ func ParseMetricType(s string) (MetricType, error) {
 	return "", fmt.Errorf("okr: %q is not a metric type", s)
 }
 
-// Progress is a whole percentage. Bounded because every consumer treats
-// it as one — a bar width, a roll-up average, a spreadsheet cell — and
-// none of them has anything sensible to do with 140.
 type Progress int
 
 func NewProgress(v int) (Progress, error) {
@@ -110,9 +93,6 @@ func NewProgress(v int) (Progress, error) {
 
 func (p Progress) Int() int { return int(p) }
 
-// Mode says whether a value is derived from the tree below or set by
-// hand. Stored per node because a team will pin one objective's status
-// while leaving the rest to roll up.
 type Mode string
 
 const (

@@ -2,13 +2,6 @@ package okrdoc
 
 import "encoding/json"
 
-// The stored shape, field for field. These mirror the document the
-// frontend writes; the domain's own shape differs where the document's
-// is inconvenient, and the mapping reconciles them.
-//
-// Every struct carries the members it did not claim, so the parts Go
-// does not model survive a round trip.
-
 type document struct {
 	SchemaVersion int          `json:"schemaVersion,omitempty"`
 	Team          string       `json:"team,omitempty"`
@@ -21,13 +14,10 @@ type document struct {
 var documentKnown = []string{"schemaVersion", "team", "clusters", "quarters"}
 
 type quarterDoc struct {
-	QuarterID string `json:"quarterId"`
-	Label     string `json:"label,omitempty"`
-	StartDate string `json:"startDate,omitempty"`
-	EndDate   string `json:"endDate,omitempty"`
-	// A pointer so an explicit false survives: omitempty cannot tell
-	// "not locked" from "never said", and the document should come back
-	// the way it went in.
+	QuarterID       string    `json:"quarterId"`
+	Label           string    `json:"label,omitempty"`
+	StartDate       string    `json:"startDate,omitempty"`
+	EndDate         string    `json:"endDate,omitempty"`
 	Locked          *bool     `json:"locked,omitempty"`
 	TeamCapacity    *float64  `json:"teamCapacity,omitempty"`
 	JiraRefreshedAt string    `json:"jiraRefreshedAt,omitempty"`
@@ -95,8 +85,6 @@ var nodeKnown = []string{
 	"updates", "notes", "metricHistory", "jiraKeys", "jiraIssues", "children",
 }
 
-// Collection members whose mere presence is worth keeping, even when
-// they are empty.
 var nodeCollections = []string{
 	"groups", "labels", "jiraKeys", "updates", "notes", "metricHistory", "children",
 }
@@ -122,9 +110,6 @@ type metricPointDoc struct {
 	Current float64 `json:"current"`
 }
 
-// snapshotDoc is what the tracker last said about one linked issue, as
-// stored. Decoded on demand rather than eagerly, because the document
-// keeps them in a map keyed by issue.
 type snapshotDoc struct {
 	Summary   string      `json:"summary,omitempty"`
 	IssueType string      `json:"issueType,omitempty"`

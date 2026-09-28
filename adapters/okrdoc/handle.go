@@ -8,14 +8,6 @@ import (
 	"github.com/helmedeiros/quartermark/okr"
 )
 
-// Document is a parsed OKR document you can read as domain objects,
-// change, and write back.
-//
-// The point of holding the parsed form rather than re-encoding from the
-// domain is that the domain does not model everything: members it has
-// never heard of, and the difference between an empty list and no list,
-// both live here. Writing back through the original document means a
-// change to one node leaves the rest of the file exactly as it was.
 type Document struct {
 	doc document
 }
@@ -28,8 +20,6 @@ func Parse(raw []byte) (*Document, error) {
 	return &Document{doc: doc}, nil
 }
 
-// Domain reads the document as domain objects, rejecting anything
-// outside the vocabulary.
 func (d *Document) Domain() (okr.TeamOkrs, error) {
 	team := okr.TeamOkrs{Team: d.doc.Team, Clusters: d.doc.Clusters}
 	for _, q := range d.doc.Quarters {
@@ -42,13 +32,6 @@ func (d *Document) Domain() (okr.TeamOkrs, error) {
 	return team, nil
 }
 
-// Apply writes the domain's values back over the document, touching
-// only the members the domain models.
-//
-// Matching is by id, and a node the document does not have is an error
-// rather than an append: this exists to save edits to an existing plan,
-// and silently inventing a node would hide a bug in whatever produced
-// the domain object.
 func (d *Document) Apply(team okr.TeamOkrs) error {
 	d.doc.SchemaVersion = okr.SchemaVersion
 	d.doc.Team = team.Team
@@ -83,8 +66,6 @@ func applyQuarter(target *quarterDoc, q okr.Quarter) {
 	target.StartDate = q.Start.String()
 	target.EndDate = q.End.String()
 	target.TeamCapacity = q.Capacity
-	// Only write locked when it is true or was already written, so a
-	// quarter that never mentioned it does not gain the member.
 	if q.Locked || target.Locked != nil {
 		locked := q.Locked
 		target.Locked = &locked
@@ -93,8 +74,6 @@ func applyQuarter(target *quarterDoc, q okr.Quarter) {
 	target.JiraAsOf = formatInstant(q.TrackerAsOf)
 }
 
-// applyNodeTree finds each domain node by id anywhere in the document's
-// tree and writes it back, recursing into children.
 func applyNodeTree(targets []nodeDoc, n okr.Node) error {
 	target := findNode(targets, n.ID)
 	if target == nil {
@@ -154,8 +133,6 @@ func applyNode(target *nodeDoc, n okr.Node) {
 		target.MetricType, target.Target, target.Current, target.Unit = "", nil, nil, ""
 	}
 
-	// Same reasoning as locked: do not add the member to a node that
-	// never carried it.
 	if n.ContributesToParentGrade || target.ContributesToParentGrade != nil {
 		v := n.ContributesToParentGrade
 		target.ContributesToParentGrade = &v
@@ -212,26 +189,16 @@ func applyMetricHistory(target *nodeDoc, n okr.Node) {
 	target.MetricHistory = out
 }
 
-// Bytes writes the document back out.
 func (d *Document) Bytes() ([]byte, error) {
 	return encodeDocument(d.doc)
 }
 
-// applySnapshots writes the tracker's last word back into the document.
-//
-// Encoded here rather than carried through extras because a refresh
-// exists to change exactly these, so they are the one part of the
-// document the domain is authoritative about.
 func applySnapshots(target *nodeDoc, n okr.Node) {
 	if len(n.TrackerSnapshots) == 0 {
 		return
 	}
 	out := make(map[string]json.RawMessage, len(n.TrackerSnapshots))
 	for key, s := range n.TrackerSnapshots {
-		// What the document already said about this issue. Anything the
-		// re-encoding omits is restored from it, so an explicitly
-		// written zero — progress 0, an empty assignee, an empty label
-		// list — is not quietly deleted by omitempty.
 		var original extras
 		if raw, ok := target.JiraIssues[key]; ok {
 			_ = json.Unmarshal(raw, &original)
@@ -258,7 +225,6 @@ func applySnapshots(target *nodeDoc, n okr.Node) {
 		}
 		encoded, err := mergeExtras(doc, original)
 		if err != nil {
-			// snapshotDoc is plain data; marshalling it cannot fail.
 			continue
 		}
 		out[key] = encoded
@@ -266,9 +232,6 @@ func applySnapshots(target *nodeDoc, n okr.Node) {
 	target.JiraIssues = out
 }
 
-// formatInstant writes an RFC3339 timestamp, or nothing for the zero
-// time — a quarter that has never been refreshed should not gain a
-// refresh time of year one.
 func formatInstant(t time.Time) string {
 	if t.IsZero() {
 		return ""

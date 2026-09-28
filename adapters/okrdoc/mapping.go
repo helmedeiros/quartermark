@@ -8,12 +8,6 @@ import (
 	"github.com/helmedeiros/quartermark/okr"
 )
 
-// Decode reads a stored document into the domain.
-//
-// Strict: a value outside the vocabulary is an error here rather than a
-// surprise later. The alternative — accepting it and rendering
-// something neutral — is how an unrecognised status reached a chart and
-// took the page down with it.
 func Decode(raw []byte) (okr.TeamOkrs, error) {
 	doc, err := decodeDocument(raw)
 	if err != nil {
@@ -118,8 +112,6 @@ func toNode(n nodeDoc) (okr.Node, error) {
 		return okr.Node{}, fmt.Errorf("node %s due: %w", n.ID, err)
 	}
 
-	// The metric's parts are flat on the document and a concept in the
-	// domain. It exists when the document says what kind it is.
 	if n.MetricType != "" {
 		metricType, err := okr.ParseMetricType(n.MetricType)
 		if err != nil {
@@ -171,8 +163,6 @@ func toUpdates(n nodeDoc) ([]okr.Update, error) {
 			return nil, fmt.Errorf("node %s update %s: %w", n.ID, u.Date, err)
 		}
 		entry := okr.Update{Date: date, Progress: progress, Note: u.Note, Author: u.Author}
-		// An update predating the status field carries none, and that
-		// is history rather than an error.
 		if u.Status != "" {
 			if entry.Status, err = okr.ParseStatus(u.Status); err != nil {
 				return nil, fmt.Errorf("node %s update %s: %w", n.ID, u.Date, err)
@@ -245,8 +235,6 @@ func parseModeOrEmpty(s string) (okr.Mode, error) {
 	return okr.ParseMode(s)
 }
 
-// parseInstant reads an RFC3339 timestamp, treating absence as the zero
-// time — a quarter that has never been refreshed has no refresh time.
 func parseInstant(s string) (time.Time, error) {
 	if s == "" {
 		return time.Time{}, nil
