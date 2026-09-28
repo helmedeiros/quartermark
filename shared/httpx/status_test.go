@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/helmedeiros/quartermark/httpx"
+	"github.com/helmedeiros/quartermark/shared/httpx"
 )
 
 var errUnderlying = errors.New("underlying")

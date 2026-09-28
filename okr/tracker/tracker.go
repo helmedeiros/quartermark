@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/helmedeiros/quartermark/timewindow"
+	"github.com/helmedeiros/quartermark/shared/timewindow"
 )
 
 type Issue struct {

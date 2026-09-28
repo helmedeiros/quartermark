@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/helmedeiros/quartermark/httpx"
+	"github.com/helmedeiros/quartermark/shared/httpx"
 )
 
 type closeTrackingBody struct {

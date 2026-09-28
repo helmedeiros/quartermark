@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/helmedeiros/quartermark/app"
-	"github.com/helmedeiros/quartermark/httpx"
 	"github.com/helmedeiros/quartermark/okr"
+	"github.com/helmedeiros/quartermark/shared/httpx"
 )
 
 const okrsSection = "okrs"

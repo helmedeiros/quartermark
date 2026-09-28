@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/helmedeiros/quartermark/httpx"
+	"github.com/helmedeiros/quartermark/shared/httpx"
 )
 
 const (

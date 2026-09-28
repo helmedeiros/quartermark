@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/timewindow"
+	"github.com/helmedeiros/quartermark/shared/timewindow"
 )
 
 type demoTracker struct{ real trackerFor }

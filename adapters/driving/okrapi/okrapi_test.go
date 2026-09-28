@@ -13,7 +13,7 @@ import (
 	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/timewindow"
+	"github.com/helmedeiros/quartermark/shared/timewindow"
 )
 
 type fakeStore struct {

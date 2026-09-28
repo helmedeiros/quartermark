@@ -10,7 +10,7 @@ import (
 
 	"github.com/helmedeiros/quartermark/adapters/driven/jira"
 	"github.com/helmedeiros/quartermark/okr/tracker"
-	"github.com/helmedeiros/quartermark/timewindow"
+	"github.com/helmedeiros/quartermark/shared/timewindow"
 )
 
 func TestIngestAdapter_SearchIssuesByAssignee_MapsFields(t *testing.T) {
