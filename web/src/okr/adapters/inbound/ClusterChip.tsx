@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { clusterColor, type Cluster } from "../../domain/tree";
-import { useClusters } from "../../useClusters";
+import { useClusters } from "../../application/useClusters";
 
 export function ClusterChip({
   cluster,

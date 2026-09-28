@@ -34,7 +34,7 @@ import {
 } from "../../domain/tree";
 import { Sparkline } from "../../../components/Sparkline";
 import { ClusterChip } from "./ClusterChip";
-import { useClusters } from "../../useClusters";
+import { useClusters } from "../../application/useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
@@ -50,7 +50,7 @@ import type {
   Quarter,
   TeamOkrsData,
 } from "../../domain/model";
-import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useOkrTreeMutations } from "../../application/useOkrTreeMutations";
 import { useJiraBaseUrl } from "../../../api/useOkrSettings";
 import { useCurrentTeamSlug } from "../../../useCurrentTeamSlug";
 import { queryStateMessage } from "../../../components/queryStateMessage";

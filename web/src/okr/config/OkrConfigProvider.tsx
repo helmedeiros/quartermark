@@ -3,7 +3,7 @@ import {
   OKR_CONFIG_DEFAULTS,
   type OkrConfig,
   OkrConfigContext,
-} from "./config";
+} from "./okrConfig";
 
 export function OkrConfigProvider({
   children,

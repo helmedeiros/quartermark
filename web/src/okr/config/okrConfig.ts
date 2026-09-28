@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import {
   DEFAULT_EXPORT_COLUMNS,
   type ExportColumn,
-} from "./adapters/outbound/okrExport";
+} from "../adapters/outbound/okrExport";
 
 export interface OkrConfig {
   exportColumns: ExportColumn[];

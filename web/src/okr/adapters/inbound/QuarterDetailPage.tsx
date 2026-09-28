@@ -4,15 +4,15 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../../../api/client";
 import { useTeamBlob } from "../../../api/useTeamBlob";
 import { formatRelativeTime } from "../../../lib/format";
-import { useOkrConfig } from "../../config";
+import { useOkrConfig } from "../../config/okrConfig";
 import { downloadWorkbook } from "../outbound/okrExportWorkbook";
 import { collectLabels, collectOwners } from "../../domain/tree";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrQuarterSummary } from "./OkrQuarterSummary";
 import { OkrTreeTable } from "./OkrTreeTable";
 import type { OkrNodeType, Quarter, TeamOkrsData } from "../../domain/model";
-import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
-import { useClusters } from "../../useClusters";
+import { useOkrTreeMutations } from "../../application/useOkrTreeMutations";
+import { useClusters } from "../../application/useClusters";
 import { useJiraBaseUrl } from "../../../api/useOkrSettings";
 import { queryStateMessage } from "../../../components/queryStateMessage";
 

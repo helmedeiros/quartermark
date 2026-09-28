@@ -1,6 +1,6 @@
 export { okrSection } from "./section";
-export { type OkrConfig } from "./config";
-export { OkrConfigProvider } from "./OkrConfigProvider";
+export { type OkrConfig } from "./config/okrConfig";
+export { OkrConfigProvider } from "./config/OkrConfigProvider";
 export {
   buildDetails,
   buildExportRows,

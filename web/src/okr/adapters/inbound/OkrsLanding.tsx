@@ -5,7 +5,7 @@ import {
   NON_CLUSTER,
   objectiveAvgProgress,
 } from "../../domain/tree";
-import { useClusters } from "../../useClusters";
+import { useClusters } from "../../application/useClusters";
 import { QueryState } from "../../../components/QueryState";
 import { ClusterChip } from "./ClusterChip";
 import type { TeamOkrsData } from "../../domain/model";

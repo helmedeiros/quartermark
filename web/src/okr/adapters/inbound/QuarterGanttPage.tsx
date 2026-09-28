@@ -9,7 +9,7 @@ import {
 import { objectiveGanttGroups, sprintGanttBars } from "../../domain/tree";
 import { OkrGanttChart } from "./OkrGanttChart";
 import type { TeamOkrsData } from "../../domain/model";
-import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useOkrTreeMutations } from "../../application/useOkrTreeMutations";
 import { queryStateMessage } from "../../../components/queryStateMessage";
 
 type GanttGranularity = Extract<Granularity, "day" | "week">;

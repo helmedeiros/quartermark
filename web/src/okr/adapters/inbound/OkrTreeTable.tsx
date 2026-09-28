@@ -32,7 +32,7 @@ import {
 import { formatRelativeTime, initials } from "../../../lib/format";
 import { jiraTicketUrl } from "../outbound/jira";
 import { ClusterChip } from "./ClusterChip";
-import { useClusters } from "../../useClusters";
+import { useClusters } from "../../application/useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
 import { OkrRowMenu } from "./OkrRowMenu";
@@ -43,7 +43,7 @@ import type {
   OkrStatus,
   TeamOkrsData,
 } from "../../domain/model";
-import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useOkrTreeMutations } from "../../application/useOkrTreeMutations";
 import { useJiraBaseUrl } from "../../../api/useOkrSettings";
 
 const COLUMN_LABELS: Record<OkrColumnKey, string> = {

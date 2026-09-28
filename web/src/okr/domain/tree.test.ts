@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OkrNode } from "./domain/model";
+import type { OkrNode } from "./model";
 import {
   addOkrNode,
   allowedChildTypesFor,
@@ -16,7 +16,7 @@ import {
   removeNode,
   reparentNode,
   targetNumberFor,
-} from "./domain/tree";
+} from "./tree";
 
 function node(
   id: string,
