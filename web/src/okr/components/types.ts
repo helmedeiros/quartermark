@@ -95,11 +95,6 @@ export interface Quarter {
 export interface TeamOkrsData {
   team: string;
   quarters: Quarter[];
-  // The team's own strategic themes. Absent means "use the module's
-  // default list" — see DEFAULT_CLUSTERS.
   clusters?: string[];
-  // Stamped by the server (see okr.UpgradeBlob). Optional because a blob
-  // written before versioning existed has none; present here so edits
-  // round-trip it instead of silently dropping it on save.
   schemaVersion?: number;
 }

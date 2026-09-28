@@ -3,10 +3,6 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { STATUS_META, type OkrNode, type Quarter } from "./okr";
 
-// The demo dataset is the first thing anyone sees, and it is hand-written
-// JSON that no compiler checks. A value outside the vocabulary does not
-// degrade — STATUS_META[unknown] is undefined and the chart throws — so
-// the fixture is validated here instead.
 const demo = JSON.parse(
   readFileSync(resolve(process.cwd(), "../demo/okrs.json"), "utf8"),
 ) as { quarters: Quarter[] };

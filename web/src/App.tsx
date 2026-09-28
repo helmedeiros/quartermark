@@ -4,8 +4,6 @@ import { useDefaultTeamSlug } from "./api/useDefaultTeamSlug";
 import { FirstRun } from "./FirstRun";
 import { DEFAULT_SECTION_ID, SECTIONS } from "./sections";
 
-// Every section nested under /t/:teamSlug/, reading the slug once here
-// rather than each page reaching for it.
 function TeamLayout() {
   const { teamSlug = "" } = useParams<{ teamSlug: string }>();
 
@@ -48,9 +46,6 @@ function TeamLayout() {
   );
 }
 
-// Sends you to a team rather than to a URL that needs one. Waits for the
-// registry to answer first: bouncing to first-run on every slow load
-// would be worse than a moment of nothing.
 function LandingRedirect() {
   const { data: teams } = useTeams();
   const teamSlug = useDefaultTeamSlug();

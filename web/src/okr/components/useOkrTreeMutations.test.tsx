@@ -34,9 +34,6 @@ describe("useOkrTreeMutations", () => {
     vi.restoreAllMocks();
   });
 
-  // The server stamps the version authoritatively, but a save that dropped
-  // it would round-trip the blob through version 0 on every edit. Carrying
-  // it is what makes a later migration step able to trust what it reads.
   it("carries schemaVersion through to the saved payload", async () => {
     const put = vi.spyOn(api, "putTeamBlob").mockResolvedValue(undefined);
 

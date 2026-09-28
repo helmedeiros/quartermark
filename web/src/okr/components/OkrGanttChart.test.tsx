@@ -33,11 +33,6 @@ const quarter: Quarter = {
 
 const dateWindow = { start: new Date(2026, 9, 1), end: new Date(2026, 9, 31) };
 
-// Mirrors OkrGanttChart's own day-granularity width math for this exact
-// window (31 days), so a drag distance maps to a precise, non-ambiguous
-// number of days when rounded — this is what the component itself computes
-// internally, duplicated here only so the test can pick an exact pixel
-// delta rather than guessing at rounding boundaries.
 const WIDTH = Math.max(720, 31 * 22);
 const DAY_WIDTH = WIDTH / 31;
 
@@ -178,7 +173,6 @@ describe("OkrGanttChart milestone resize", () => {
     fireEvent.pointerMove(handle, { clientX: WEEK_WIDTH * 2 });
     fireEvent.pointerUp(handle);
 
-    // 1 week (the fixture's own span) + 2 weeks dragged = 3 weeks
     expect(onResizeMilestone).toHaveBeenCalledWith(
       "O-1-M1",
       "2026-10-05",
@@ -211,7 +205,6 @@ describe("OkrGanttChart milestone resize", () => {
     fireEvent.pointerMove(handle, { clientX: -WEEK_WIDTH });
     fireEvent.pointerUp(handle);
 
-    // dragging the start handle left grows the milestone by a week
     expect(onResizeMilestone).toHaveBeenCalledWith(
       "O-1-M1",
       "2026-09-28",
@@ -251,11 +244,6 @@ describe("OkrGanttChart milestone move — sprint alignment", () => {
     );
     const bar = screen.getByTestId("gantt-bar-O-1-M1");
 
-    // Real sprint: Oct 1 - Oct 14. The fixed 14-day cadence anchors the
-    // next projected sprint exactly on Oct 14 (this one's own close date),
-    // then Oct 28, within this 31-day window. Dragging the milestone
-    // (Oct 5 - Oct 12, a 7-day span) by 9 days puts its raw new start at
-    // Oct 14 — an exact sprint-start match — so it should land there.
     fireEvent.pointerDown(bar, { clientX: 0 });
     fireEvent.pointerMove(bar, { clientX: DAY_WIDTH * 9 });
     fireEvent.pointerUp(bar);

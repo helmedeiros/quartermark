@@ -369,8 +369,6 @@ function EditableCluster({
 }: {
   groups: string[];
   teamSlug: string;
-  // groups is [team, cluster]. Editing the cluster must preserve the
-  // team half, taken from the loaded data rather than a literal.
   teamName: string;
   disabled: boolean;
   onCommit: (groups: string[]) => void;

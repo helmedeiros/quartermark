@@ -131,11 +131,6 @@ describe("buildExportRows column injection", () => {
     expect(rows[0].Where).toBe(quarter.label);
   });
 
-  // The point of the split: an exporter that can only ever emit one
-  // organisation's vocabulary is an exporter only that organisation can
-  // Pinned positively rather than by listing what it must not contain:
-  // naming another organisation's planning vocabulary in order to forbid
-  // it would publish the very words the default set exists to avoid.
   it("defaults to a neutral column set", () => {
     expect(Object.keys(buildExportRows(quarter)[0])).toEqual([
       "#",
@@ -157,8 +152,6 @@ describe("buildExportRows column injection", () => {
       { header: "A", width: 5, value: (c) => String(++calls && c.index) },
       { header: "B", width: 5, value: (c) => String(++calls && c.index) },
     ]);
-    // Two columns over two objectives: four value calls, and each got a
-    // context rather than rebuilding one.
     expect(calls).toBe(4);
   });
 });

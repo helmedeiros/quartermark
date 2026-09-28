@@ -273,8 +273,6 @@ describe("sprintGanttBars", () => {
   };
 
   it("collects one bar per sprint, deduped by name, skipping sprints without a full date range", () => {
-    // A window narrower than one sprint's cadence, so nothing gets projected —
-    // isolates this test to the real-sprint collection/dedup behavior.
     const narrowWindow = {
       start: new Date("2026-08-31"),
       end: new Date("2026-09-13"),
@@ -301,8 +299,6 @@ describe("sprintGanttBars", () => {
       expect(bar.start.getTime() >= wideWindow.start.getTime()).toBe(true);
       expect(bar.start.getTime() <= wideWindow.end.getTime()).toBe(true);
     }
-    // real sprint is Aug 31 - Sep 14 (14 days); forward projection anchors
-    // off its own close date, so the next sprint should land on Sep 14.
     const projectedForward = bars.find(
       (b) =>
         b.isProjected && b.start.getTime() === new Date("2026-09-14").getTime(),

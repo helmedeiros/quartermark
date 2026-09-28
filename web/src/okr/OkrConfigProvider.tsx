@@ -5,9 +5,6 @@ import {
   OkrConfigContext,
 } from "./config";
 
-// Its own file so the module's config hook and context can be imported
-// without dragging a component along — which is also what keeps fast
-// refresh working.
 export function OkrConfigProvider({
   children,
   exportColumns,

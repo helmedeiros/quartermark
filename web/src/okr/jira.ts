@@ -1,8 +1,3 @@
-// Jira URL construction. The host is a per-team setting rather than a
-// constant: it is whatever instance that team's connector points at, and
-// a build-time default would bake one organisation's host into every
-// install. Callers get it from useOkrSettings.
-
 export function jiraTicketUrl(baseUrl: string, key: string): string {
   if (!baseUrl) return "";
   return `${trimSlash(baseUrl)}/browse/${key}`;

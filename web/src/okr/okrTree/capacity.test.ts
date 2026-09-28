@@ -63,8 +63,6 @@ describe("weeklyCapacity", () => {
     for (const week of rest) {
       expect(week.demand).toBeCloseTo(first.demand, 5);
     }
-    // total effort (2 engineers * 2 weeks = 4 engineer-weeks) recovered when
-    // multiplied back out over the exact 14-day span it was spread across.
     expect(first.demand * 2).toBeCloseTo(4, 5);
     expect(first.contributors).toEqual([
       {
@@ -193,7 +191,6 @@ describe("objectiveTotalEffortEngineerWeeks", () => {
         },
       ],
     };
-    // fixed at 2 engineers: (3 weeks * 2) + 0 + (4 weeks * 2) = 14
     expect(objectiveTotalEffortEngineerWeeks(objective)).toBe(14);
   });
 

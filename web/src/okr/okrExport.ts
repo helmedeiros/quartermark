@@ -6,19 +6,12 @@ import {
   statusMeta,
 } from "./okrTree/metadata";
 
-// A row is keyed by column header, so the shape follows whatever columns
-// the caller supplies rather than one fixed set.
 export type ExportRow = Record<string, string>;
 
-// Everything a column might want, computed once per objective so that
-// twenty columns don't each re-walk the tree.
 export interface ExportContext {
   node: OkrNode;
   index: number;
   quarterLabel: string;
-  // The team's cluster vocabulary. Passed in rather than imported so the
-  // exporter works for any team, not just one whose words match a
-  // built-in list.
   clusters: string[];
   keyResults: OkrNode[];
   milestones: OkrNode[];
@@ -32,9 +25,6 @@ export interface ExportColumn {
   value: (ctx: ExportContext) => string;
 }
 
-// The generic column set. An organisation whose planning vocabulary
-// differs supplies its own instead of editing this one — see
-// okrExportColumns.ts for the one this repo actually exports with.
 export const DEFAULT_EXPORT_COLUMNS: ExportColumn[] = [
   { header: "#", width: 4, value: (c) => String(c.index + 1) },
   { header: "Quarter", width: 10, value: (c) => c.quarterLabel },
@@ -126,9 +116,6 @@ function buildContext(
   const keyResults = collectKeyResults(node);
   const milestones = collectMilestones(node);
 
-  // The first key result that carries a metric stands in for the
-  // objective's headline number; objectives often have several key
-  // results but only one is the number people quote.
   const withMetric = keyResults.find(
     (k) => k.current !== undefined || k.target !== undefined,
   );
@@ -198,6 +185,4 @@ export function buildClusterAllocationRows(
     }));
 }
 
-// Re-exported so a caller supplying its own column set can build the
-// same cells the default ones do without reaching into the module.
 export { resolveCluster, statusMeta } from "./okrTree/metadata";

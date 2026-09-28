@@ -2,7 +2,6 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-// vitest runs with the web/ package as cwd.
 const UNIT_ROOT = resolve(process.cwd(), "src/okr") + "/";
 
 function filesUnder(dir: string): string[] {
@@ -18,10 +17,6 @@ function importsOf(file: string): string[] {
   return [...src.matchAll(/from\s+"([^"]+)"/g)].map((m) => m[1]);
 }
 
-// The module is meant to lift out into its own package. Anything it
-// reaches for has to come with it, so the set of things it may reach for
-// is the boundary — and a boundary nobody checks is a boundary that
-// erodes one convenient import at a time.
 describe("the OKR module's import boundary", () => {
   const files = filesUnder(UNIT_ROOT);
 
@@ -29,8 +24,6 @@ describe("the OKR module's import boundary", () => {
     expect(files.length).toBeGreaterThan(40);
   });
 
-  // These are the host application's own areas — HR dossiers, delivery
-  // metrics, engagement. None of it has anything to do with OKRs.
   it("reaches into none of the host application's sections", () => {
     const forbidden =
       /(^|\/)(engineers?|tabs|team|features|calendar|routines)\//;
@@ -42,9 +35,6 @@ describe("the OKR module's import boundary", () => {
     expect(offenders).toEqual([]);
   });
 
-  // Whatever it does reach for outside itself is what a package split
-  // has to carry or replace. Keeping that list short and explicit is the
-  // whole point; adding to it should be a deliberate act.
   it("reaches outside itself only for the agreed shared leaves", () => {
     const allowed = new Set([
       "../../api/client",
@@ -83,9 +73,6 @@ describe("the OKR module's import boundary", () => {
   });
 });
 
-// The other direction: the host may depend on the module, but only on
-// what the module publishes. A deep import into its internals is a
-// dependency the package split would silently break.
 describe("what the host application may import from the module", () => {
   const hostRoot = resolve(process.cwd(), "src");
   const hostFiles = filesUnder(hostRoot).filter(
@@ -102,7 +89,6 @@ describe("what the host application may import from the module", () => {
   });
 });
 
-// An import is still inside the unit if resolving it stays under okr/.
 function isInsideUnit(file: string, spec: string): boolean {
   const resolved = join(file, "..", spec);
   return resolved.startsWith(UNIT_ROOT);

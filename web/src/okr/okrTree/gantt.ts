@@ -231,21 +231,8 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-// This team always runs fixed 2-week sprints that start and close on the
-// same weekday (each one's close is the next one's start — contiguous, no
-// gap). Hardcoded rather than inferred from real sprint data because a
-// one-off/irregular sprint name (e.g. a personal or "bug triage" sprint)
-// can skew an inferred median cadence by a day, which then breaks weekday
-// alignment for every projected sprint after it.
 const SPRINT_CADENCE_DAYS = 14;
 
-/**
- * Real sprints, plus projected ones filling the rest of the given window —
- * before the first and after the last real sprint — continuing the fixed
- * cadence from whichever real sprint anchors each direction. Lets
- * milestones far outside Jira's own sprint horizon still snap to a
- * plausible, correctly-aligned sprint start.
- */
 export function sprintGanttBars(
   quarter: Quarter,
   window: DateWindow,
@@ -261,9 +248,6 @@ export function sprintGanttBars(
     isProjected: true,
   });
 
-  // Sprints are contiguous, so the next one starts exactly when the last
-  // real sprint closes — anchoring here (rather than start + cadence)
-  // stays correct even if that real sprint's own duration was atypical.
   let cursor = real[real.length - 1].end;
   while (cursor <= window.end) {
     projected.push(projectedBar(cursor));

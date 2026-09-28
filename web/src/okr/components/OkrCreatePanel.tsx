@@ -79,7 +79,6 @@ export function OkrCreatePanel({
   allowedTypes: OkrNodeType[];
   parentLabel?: string;
   quarterLabel: string;
-  // groups is [team, cluster]; both halves are data, not constants.
   teamName: string;
   clusters: string[];
   pending: boolean;

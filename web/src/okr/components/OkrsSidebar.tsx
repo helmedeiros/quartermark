@@ -31,9 +31,7 @@ export function OkrsSidebar({ teamSlug }: { teamSlug: string }) {
     setCollapsed(next);
     try {
       localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   const { data, isLoading, error } = useTeamBlob<TeamOkrsData>(

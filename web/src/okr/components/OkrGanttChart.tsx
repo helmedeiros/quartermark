@@ -83,10 +83,6 @@ function weeksBetween(start: Date, end: Date): number {
   );
 }
 
-// Milestones should always land on a sprint's start when moved, so a plan
-// stays aligned to real (or projected) sprint boundaries rather than
-// drifting to an arbitrary day. Falls back to the raw day-shifted date
-// when there are no sprints at all to align to.
 function nearestSprintStart(
   date: Date,
   sprints: SprintGanttBar[],
@@ -221,7 +217,6 @@ export function OkrGanttChart({
       return;
     }
 
-    // Resizing always lands on a whole number of weeks.
     const weeksDelta = Math.round(deltaPx / (dayWidth * 7));
     if (weeksDelta === 0) return;
     const currentWeeks = weeksBetween(bar.start, bar.end);

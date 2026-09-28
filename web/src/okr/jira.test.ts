@@ -16,8 +16,6 @@ describe("jiraTicketUrl", () => {
     );
   });
 
-  // A team can run OKRs without Jira configured. Returning "" lets the
-  // caller render plain text rather than a link to nowhere.
   it("returns an empty string when no host is configured", () => {
     expect(jiraTicketUrl("", "PROJ-123")).toBe("");
   });

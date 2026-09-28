@@ -11,9 +11,6 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-// What a fresh install lands on: no teams yet, so the only useful thing
-// to offer is making one. Deliberately the whole page rather than a
-// modal — on first run there is nothing behind it to go back to.
 export function FirstRun() {
   const [name, setName] = useState("");
   const navigate = useNavigate();

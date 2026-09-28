@@ -19,14 +19,6 @@ export const STATUS_META: Record<OkrStatus, StatusMeta> = {
   done: { label: "Done", cls: "good" },
 };
 
-// What an unrecognised status renders as.
-//
-// The document is hand-editable JSON and the API stores whatever it is
-// given, so a status outside the five above is reachable — and indexing
-// STATUS_META directly turns that into "cannot read properties of
-// undefined", which takes out a whole chart rather than one cell. The
-// value is echoed back so the mistake is visible instead of silently
-// becoming "Not started".
 export function statusMeta(status: string | undefined): StatusMeta {
   if (status && status in STATUS_META) {
     return STATUS_META[status as OkrStatus];
@@ -112,13 +104,6 @@ export function allowedChildTypesFor(nodeType: OkrNodeType): OkrNodeType[] {
   return [];
 }
 
-// The strategic themes objectives are grouped under.
-//
-// Every organisation words these differently, so the list is team data
-// (TeamOkrsData.clusters) and this is only the fallback for a team that
-// has not set its own. Nothing in the module may assume these specific
-// names — see resolveCluster and clusterColor, both of which take the
-// list they should work against.
 export const DEFAULT_CLUSTERS = [
   "Growth",
   "Retention",
@@ -130,14 +115,10 @@ export const DEFAULT_CLUSTERS = [
   "Cost",
 ];
 
-// A cluster is just a name. The sentinel below means "not in any".
 export type Cluster = string;
 
 export const NON_CLUSTER = "Non-Cluster";
 
-// Colour by position in the team's own list rather than by name, so any
-// vocabulary gets stable, distinct colours without anyone maintaining a
-// palette keyed to their words.
 const CLUSTER_PALETTE = [
   "#2a78d6",
   "#eb6834",
@@ -158,9 +139,6 @@ export function clusterColor(
   return CLUSTER_PALETTE[index % CLUSTER_PALETTE.length];
 }
 
-// groups is [team, cluster]. Matching is case- and space-insensitive
-// because people type these by hand; anything unrecognised is
-// NON_CLUSTER rather than a new cluster invented by a typo.
 export function resolveCluster(
   groups?: string[],
   clusters: string[] = DEFAULT_CLUSTERS,

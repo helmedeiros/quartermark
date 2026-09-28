@@ -6,11 +6,6 @@ import { OkrsSidebar } from "./components/OkrsSidebar";
 import { QuarterDetailPage } from "./components/QuarterDetailPage";
 import { QuarterGanttPage } from "./components/QuarterGanttPage";
 
-// The OKR module's registration with a host application.
-//
-// A host mounts this alongside its own sections without knowing what is
-// inside; everything the module needs lives under this directory, and
-// nothing outside it imports one of these components directly.
 export const okrSection: SectionDefinition = {
   id: "okrs",
   navLabel: "OKRs",

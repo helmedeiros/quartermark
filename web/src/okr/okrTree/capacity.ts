@@ -19,8 +19,6 @@ export interface WeekCapacity {
   contributors: WeekCapacityContributor[];
 }
 
-// Every milestone is assumed staffed by a fixed team of 2 engineers — the
-// only thing that varies per milestone is how many weeks it takes.
 const FIXED_ENGINEERS = 2;
 
 function weeksBetween(start: Date, end: Date): number {
@@ -33,9 +31,6 @@ export function dueDateAfterWeeks(startDate: string, weeks: number): string {
   return due.toISOString().slice(0, 10);
 }
 
-// Editing a milestone's effort (weeks) keeps its start date anchored and
-// recomputes its due date to match — the start never moves just because
-// the size estimate changed.
 export function effortWeeksPatch(
   milestone: OkrNode,
   objective: OkrNode,
