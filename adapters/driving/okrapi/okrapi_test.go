@@ -14,7 +14,6 @@ import (
 	"github.com/helmedeiros/quartermark/jirasource"
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
-	"github.com/helmedeiros/quartermark/storeerr"
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
@@ -98,14 +97,14 @@ func (f *fakeStore) ListTeams(context.Context) ([]org.Team, error) {
 func (f *fakeStore) GetTeam(_ context.Context, slug string) (org.Team, error) {
 	t, ok := f.teams[slug]
 	if !ok {
-		return org.Team{}, storeerr.ErrNotFound
+		return org.Team{}, okr.ErrNotFound
 	}
 	return t, nil
 }
 
 func (f *fakeStore) CreateTeam(_ context.Context, t org.Team) error {
 	if _, exists := f.teams[t.Slug]; exists {
-		return storeerr.ErrAlreadyExists
+		return okr.ErrAlreadyExists
 	}
 	f.teams[t.Slug] = t
 	return nil

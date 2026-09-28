@@ -12,11 +12,10 @@ var layers = map[string][]string{
 	"okr":        {"jirasource", "org", "timewindow"},
 	"jirasource": {"timewindow"},
 	"org":        {},
-	"storeerr":   {},
 	"timewindow": {},
 	"httpx":      {},
 	"app": {
-		"okr", "jirasource", "org", "storeerr", "timewindow",
+		"okr", "jirasource", "org", "timewindow",
 		"adapters/driven/okrdoc",
 	},
 }
@@ -59,7 +58,7 @@ func TestEachLayerDependsOnlyOnWhatItIsAllowedTo(t *testing.T) {
 }
 
 func TestTheDomainReachesNoAdapter(t *testing.T) {
-	for _, pkg := range []string{"okr", "jirasource", "org", "storeerr", "timewindow"} {
+	for _, pkg := range []string{"okr", "jirasource", "org", "timewindow"} {
 		for _, dep := range dependenciesOf(t, pkg) {
 			if strings.HasPrefix(dep, "adapters/") || strings.HasPrefix(dep, "cmd/") {
 				t.Errorf("%s reaches outward to %s", pkg, dep)

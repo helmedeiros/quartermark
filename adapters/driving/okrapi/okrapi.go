@@ -9,7 +9,6 @@ import (
 	"github.com/helmedeiros/quartermark/httpx"
 	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
-	"github.com/helmedeiros/quartermark/storeerr"
 )
 
 const okrsSection = "okrs"
@@ -67,7 +66,7 @@ func readSettings(service *app.Service) http.HandlerFunc {
 func readSection(service *app.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, ok, err := service.ReadSection(r.Context(), r.PathValue("teamSlug"), r.PathValue("section"))
-		httpx.WriteRawOrNotFound(w, data, ok, err, storeerr.ErrNotFound)
+		httpx.WriteRawOrNotFound(w, data, ok, err, okr.ErrNotFound)
 	}
 }
 
@@ -156,9 +155,9 @@ func statusFor(err error) int {
 	switch {
 	case errors.Is(err, app.ErrNoTracker):
 		return http.StatusServiceUnavailable
-	case errors.Is(err, app.ErrNoPlan), errors.Is(err, app.ErrNotFound), errors.Is(err, storeerr.ErrNotFound):
+	case errors.Is(err, app.ErrNoPlan), errors.Is(err, app.ErrNotFound), errors.Is(err, okr.ErrNotFound):
 		return http.StatusNotFound
-	case errors.Is(err, storeerr.ErrAlreadyExists):
+	case errors.Is(err, okr.ErrAlreadyExists):
 		return http.StatusConflict
 	case errors.Is(err, okr.ErrFutureSchemaVersion):
 		return http.StatusConflict

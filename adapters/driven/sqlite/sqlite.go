@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
-	"github.com/helmedeiros/quartermark/storeerr"
 	modernsqlite "modernc.org/sqlite"
 )
 
@@ -56,7 +56,7 @@ func (s *Store) CreateTeam(ctx context.Context, t org.Team) error {
 		`INSERT INTO teams (slug, name, created_at) VALUES (?, ?, ?)`,
 		t.Slug, t.Name, t.CreatedAt)
 	if isDuplicateKey(err) {
-		return fmt.Errorf("team %s: %w", t.Slug, storeerr.ErrAlreadyExists)
+		return fmt.Errorf("team %s: %w", t.Slug, okr.ErrAlreadyExists)
 	}
 	return err
 }
@@ -67,7 +67,7 @@ func (s *Store) GetTeam(ctx context.Context, slug string) (org.Team, error) {
 		`SELECT slug, name, created_at FROM teams WHERE slug = ?`, slug).
 		Scan(&t.Slug, &t.Name, &t.CreatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
-		return org.Team{}, storeerr.ErrNotFound
+		return org.Team{}, okr.ErrNotFound
 	}
 	return t, err
 }

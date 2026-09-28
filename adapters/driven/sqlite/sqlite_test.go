@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
+	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
-	"github.com/helmedeiros/quartermark/storeerr"
 )
 
 func open(t *testing.T) *sqlite.Store {
@@ -85,15 +85,15 @@ func TestCreateTeamTwiceReportsAlreadyExists(t *testing.T) {
 	}
 
 	err := store.CreateTeam(ctx, team)
-	if !errors.Is(err, storeerr.ErrAlreadyExists) {
-		t.Fatalf("second CreateTeam = %v, want storeerr.ErrAlreadyExists", err)
+	if !errors.Is(err, okr.ErrAlreadyExists) {
+		t.Fatalf("second CreateTeam = %v, want okr.ErrAlreadyExists", err)
 	}
 }
 
 func TestGetUnknownTeamReportsNotFound(t *testing.T) {
 	_, err := open(t).GetTeam(context.Background(), "nope")
-	if !errors.Is(err, storeerr.ErrNotFound) {
-		t.Fatalf("GetTeam = %v, want storeerr.ErrNotFound", err)
+	if !errors.Is(err, okr.ErrNotFound) {
+		t.Fatalf("GetTeam = %v, want okr.ErrNotFound", err)
 	}
 }
 

@@ -1,4 +1,4 @@
-package storeerr
+package okr
 
 import "errors"
 
