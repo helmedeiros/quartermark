@@ -14,6 +14,7 @@ import type { OkrNodeType, Quarter, TeamOkrsData } from "./types";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { useClusters } from "../useClusters";
 import { useJiraBaseUrl } from "../../api/useOkrSettings";
+import { queryStateMessage } from "../../components/queryStateMessage";
 
 function jiraSyncStatusLabel(quarter: Quarter): string | null {
   if (!quarter.jiraRefreshedAt) return null;
@@ -66,8 +67,8 @@ export function QuarterDetailPage({ teamSlug }: { teamSlug: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamSlug, quarterId, trackerConfigured]);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error) return <p>Failed to load OKRs: {String(error)}</p>;
+  const queryState = queryStateMessage(isLoading, error, "OKRs");
+  if (queryState) return queryState;
 
   const quarter = data?.quarters.find((q) => q.quarterId === quarterId);
   if (!quarter) return <p className="muted">Quarter not found.</p>;

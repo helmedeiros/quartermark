@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { queryStateMessage } from "./queryStateMessage";
 
 export function QueryState({
   isLoading,
@@ -11,13 +12,5 @@ export function QueryState({
   label: string;
   children: ReactNode;
 }) {
-  if (isLoading) return <p>Loading…</p>;
-  if (error) {
-    return (
-      <p>
-        Failed to load {label}: {String(error)}
-      </p>
-    );
-  }
-  return <>{children}</>;
+  return <>{queryStateMessage(isLoading, error, label) ?? children}</>;
 }

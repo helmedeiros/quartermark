@@ -5,6 +5,7 @@ import { resolveCluster, type Cluster } from "../okrTree";
 import { ClusterChip } from "./ClusterChip";
 import { OkrTreeTable } from "./OkrTreeTable";
 import type { TeamOkrsData } from "./types";
+import { queryStateMessage } from "../../components/queryStateMessage";
 
 export function ClusterDetailPage({ teamSlug }: { teamSlug: string }) {
   const { cluster: clusterParam } = useParams<{ cluster: string }>();
@@ -26,8 +27,8 @@ export function ClusterDetailPage({ teamSlug }: { teamSlug: string }) {
       .filter((q) => q.objectives.length > 0);
   }, [data, cluster]);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error) return <p>Failed to load OKRs: {String(error)}</p>;
+  const queryState = queryStateMessage(isLoading, error, "OKRs");
+  if (queryState) return queryState;
 
   const totalObjectives = quartersWithMatches.reduce(
     (sum, q) => sum + q.objectives.length,

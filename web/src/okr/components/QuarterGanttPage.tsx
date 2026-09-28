@@ -10,6 +10,7 @@ import { objectiveGanttGroups, sprintGanttBars } from "../okrTree";
 import { OkrGanttChart } from "./OkrGanttChart";
 import type { TeamOkrsData } from "./types";
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
+import { queryStateMessage } from "../../components/queryStateMessage";
 
 type GanttGranularity = Extract<Granularity, "day" | "week">;
 
@@ -58,8 +59,8 @@ export function QuarterGanttPage({ teamSlug }: { teamSlug: string }) {
   const [granularity, setGranularity] = useState<GanttGranularity>("day");
   const tree = useOkrTreeMutations(teamSlug, data!, quarterId!);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error) return <p>Failed to load OKRs: {String(error)}</p>;
+  const queryState = queryStateMessage(isLoading, error, "OKRs");
+  if (queryState) return queryState;
 
   const quarter = data?.quarters.find((q) => q.quarterId === quarterId);
   if (!quarter) return <p className="muted">Quarter not found.</p>;

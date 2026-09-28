@@ -53,6 +53,7 @@ import type {
 import { useOkrTreeMutations } from "./useOkrTreeMutations";
 import { useJiraBaseUrl } from "../../api/useOkrSettings";
 import { useCurrentTeamSlug } from "../../useCurrentTeamSlug";
+import { queryStateMessage } from "../../components/queryStateMessage";
 
 function MarkdownTextarea({
   value,
@@ -694,8 +695,8 @@ export function OkrDetailPage({ teamSlug }: { teamSlug: string }) {
   } | null>(null);
   const [linkingJira, setLinkingJira] = useState(false);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (error) return <p>Failed to load OKRs: {String(error)}</p>;
+  const queryState = queryStateMessage(isLoading, error, "OKRs");
+  if (queryState) return queryState;
 
   const quarter = data?.quarters.find((q) => q.quarterId === quarterId);
   if (!quarter) return <p className="muted">Quarter not found.</p>;
