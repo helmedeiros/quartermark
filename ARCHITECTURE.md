@@ -39,54 +39,85 @@ Two rules the versioning enforces:
 ## Packages
 
 ```
-okr/            the domain. Tree, quarters, schema versioning, Jira
-                progress roll-up, and Store — the persistence port.
-jirasource/     the Jira port and its data. No HTTP, no storage.
-timewindow/     the half-open range every source is queried over. Its own
-                package because both the GitHub-shaped and Jira-shaped
-                callers take one, and neither should import the other.
-org/            team registry entry and connector configuration.
-storeerr/       not-found and already-exists, shared by value so errors.Is
-                matches across ports that both report them.
-httpx/          JSON response plumbing, and a way for an error to carry the
-                status it should be reported as.
-jsontree/       walking an untyped JSON tree.
+okr/                  the domain. Tree, quarters, calendar dates, schema
+                      versioning, progress roll-up, and the ports it owns:
+                      Repository, Teams, and its error vocabulary.
+okr/tracker/          the issue tracker port and the data it returns. Inside
+                      the hexagon because the domain decides what it needs to
+                      read; its own package because a tracker's Sprint and a
+                      plan's Sprint are different things.
 
-adapters/jira/       HTTP client implementing jirasource.Source.
-adapters/sqlite/     reference okr.Store. Two tables.
-adapters/connectors/ resolves a team's Jira client per request.
-adapters/okrapi/     the HTTP routes, mountable onto a mux you own.
+app/                  the use cases. One Service, one method per thing a
+                      caller can ask for, and the two ports it needs that the
+                      domain does not: Documents and Tracker.
 
-cmd/okrd/       the standalone server.
-web/src/okr/    the frontend module: one importable unit, one export.
-web/src/        the shell around it — routing, first run, section registry.
+adapters/driving/okrapi/      HTTP routes, mountable onto a mux you own.
+adapters/driven/jira/         HTTP client implementing tracker.Source.
+adapters/driven/sqlite/       reference Repository and Documents. Two tables.
+adapters/driven/okrdoc/       the JSON document: decode to domain, apply a
+                              changed domain back, preserve everything the
+                              domain does not model.
+adapters/driven/connectors/   resolves a team's tracker per request, and the
+                              configuration record that describes one.
+
+shared/httpx/         JSON response plumbing, and a way for an error to carry
+                      the status it should be reported as.
+shared/timewindow/    the half-open range sources are queried over. Shared
+                      because Jira-shaped and GitHub-shaped callers both take
+                      one and neither should import the other.
+
+cmd/okrd/             the standalone server. The only place that builds a
+                      concrete adapter and hands it to app.New.
+web/src/okr/          the frontend module: one importable unit, one export.
+web/src/              the shell around it — routing, first run, registry.
 ```
 
-Dependencies point inward. `okr` imports `jirasource` and `jsontree` and
-nothing else; adapters import the domain; the domain imports no adapter.
+## Why the folders read this way
 
-## The two ports that matter
+`okr` and `app` sit at the root because they are the hexagon and its use
+cases; everything else is named by its relation to them. Adapters are grouped
+by which way control flows — `driving` is called by the outside world,
+`driven` is called by the application through a port — because that is the
+distinction the word "adapter" alone hides. `shared` holds what belongs to
+neither side.
 
-**`okr.Store`** is five methods: list, get and create a team, and get and put
-a JSON document by (team, section). Deliberately small — a host application
-embedding this has a much larger repository of its own and should not have to
-hand the whole thing over, and this module should not be able to reach
-anything it has no business reading.
+There is no `internal/`, which is where a Go application would usually put
+all of this. Quartermark is consumed as a library by a host application, and
+Go makes `internal/` unimportable from outside the module, so anything a host
+mounts has to stay reachable.
+
+`architecture_test.go` enforces the dependency rule with `go list -deps`: an
+allowed-import set per layer, the domain reaching no adapter, the application
+reaching no transport, and no adapter depending on another. A restructure
+that breaks the hexagon fails there rather than in review.
+
+## The ports that matter
+
+**`okr.Repository`** loads and saves a team's plan as typed domain objects —
+two methods. **`okr.Teams`** lists, gets and creates a team. They are
+deliberately small: a host application embedding this has a much larger
+repository of its own and should not have to hand the whole thing over, and
+this module should not be able to reach anything it has no business reading.
 
 Narrowness is also what makes one implementation serve both cases. The
 two-table SQLite store here and a twenty-table application store satisfy the
-same interface, so neither needs an adapter in between.
+same interfaces, so neither needs an adapter in between.
 
-**`jirasource.Source`** is four methods for reading issues. It is a port
-rather than a client so the domain's progress roll-up can be tested without a
+**`app.Documents`** is the byte-level escape hatch — get and put a JSON
+document by (team, section). It exists because some sections are passed
+through without the domain having an opinion about them.
+
+**`tracker.Source`** is four methods for reading issues. It is a port rather
+than a client so the domain's progress roll-up can be tested without a
 network, and so an organisation on a different tracker has one file to write.
 
 ## Mounting into a host
 
-`okrapi.Mount(mux, store, resolver)` registers absolute paths onto a mux the
-caller owns, rather than building one. The resolver it takes is Jira-only:
-these routes read Jira and nothing else, so requiring a GitHub client to
-mount them would be asking for a dependency none of the handlers can use.
+`okrapi.Mount(mux, service)` registers absolute paths onto a mux the caller
+owns, rather than building one. It takes the application service and nothing
+else: the routes decode a request, call one use case and encode the result,
+so every decision about storage or trackers has already been made by whoever
+constructed the service.
 
 The frontend mirrors this. `web/src/okr` exports one section definition that a
 host registers alongside its own. Two tests hold the boundary — what the
@@ -115,7 +146,7 @@ by someone adding a field to the record.
 
 ## Testing
 
-- Go: unit tests per package; `adapters/okrapi` drives `Mount` on a bare mux
+- Go: unit tests per package; `adapters/driving/okrapi` drives `Mount` on a bare mux
   against an in-memory store and a stub Jira, which is also the proof that
   the narrow port is sufficient — nothing in those tests needs SQLite.
 - Frontend: component and pure-function tests, plus the two boundary tests.

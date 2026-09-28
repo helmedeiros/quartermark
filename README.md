@@ -93,14 +93,16 @@ than code:
 Quartermark is built to be mounted inside something bigger, not only run on
 its own.
 
-On the server, implement `okr.Store` — five methods, a team registry and a
-JSON document per (team, section) — and mount the routes onto a mux you own:
+On the server, implement four narrow ports over storage you already have —
+`okr.Repository` and `okr.Teams` for plans and teams, `app.Documents` for
+pass-through sections, `app.Tracker` to resolve a team's issue tracker — then
+mount the routes onto a mux you own:
 
 ```go
-okrapi.Mount(mux, yourStore, yourJiraResolver)
+okrapi.Mount(mux, app.New(plans, teams, documents, tracker))
 ```
 
-Whatever storage you already have almost certainly satisfies that port
+Whatever storage you already have almost certainly satisfies those ports
 without an adapter. The reference implementation here is two tables; an
 application with twenty satisfies it equally, and neither knows about the
 other.
