@@ -32,8 +32,6 @@ func TestNewNodeRequiresWhatNothingIsValidWithout(t *testing.T) {
 	}
 }
 
-// Ids address nodes in URLs and in the tracker link map. Two nodes
-// sharing one means an edit lands on whichever the walk reached first.
 func TestValidateRejectsDuplicateIdsAnywhereInTheTree(t *testing.T) {
 	tree := node(t, "O-1", okr.Objective,
 		node(t, "KR-1", okr.KeyResult,
@@ -53,7 +51,6 @@ func TestValidateRejectsDuplicateIdsAnywhereInTheTree(t *testing.T) {
 	}
 }
 
-// A milestone is a leaf, so anything under one is a mistake.
 func TestValidateRejectsAnIllegalParentChildPair(t *testing.T) {
 	tree := node(t, "O-1", okr.Objective,
 		node(t, "M-1", okr.Milestone,
@@ -70,9 +67,6 @@ func TestValidateRejectsAnIllegalParentChildPair(t *testing.T) {
 	}
 }
 
-// Shapes real plans use: a sub-objective breaking up a large bet, and a
-// milestone hanging straight off an objective when there is no
-// measurable key result for it.
 func TestValidateAcceptsSubObjectivesAndBareMilestones(t *testing.T) {
 	tree := node(t, "O-1", okr.Objective,
 		node(t, "O-1a", okr.Objective,
@@ -121,8 +115,6 @@ func TestWalkVisitsEveryNodeOnce(t *testing.T) {
 	}
 }
 
-// Walk hands out pointers so a caller can change what it visits — which
-// is exactly what applying tracker progress does.
 func TestWalkExposesNodesForMutation(t *testing.T) {
 	tree := node(t, "O-1", okr.Objective,
 		node(t, "KR-1", okr.KeyResult),

@@ -33,9 +33,6 @@ func TestBlobVersionReadsStampedVersion(t *testing.T) {
 	}
 }
 
-// An unversioned blob is every blob that exists today. Upgrading it must
-// stamp the current version and change nothing else — v1 *is* the shape
-// already in use, so there is no structural step to apply.
 func TestUpgradeBlobStampsUnversionedBlobAndPreservesContent(t *testing.T) {
 	before := `{"team":"Demo","quarters":[{"quarterId":"2026-q1","objectives":[{"id":"O-1","title":"Ship it","effortWeeks":3}]}]}`
 
@@ -63,9 +60,6 @@ func TestUpgradeBlobStampsUnversionedBlobAndPreservesContent(t *testing.T) {
 	}
 }
 
-// Already-current blobs are returned byte-identical, so the steady state
-// is a pure passthrough and no write path churns a 127KB blob on every
-// save just to re-stamp a version it already carries.
 func TestUpgradeBlobLeavesCurrentBlobUntouched(t *testing.T) {
 	before := []byte(`{"schemaVersion":1,"team":"Demo","quarters":[]}`)
 
@@ -81,9 +75,6 @@ func TestUpgradeBlobLeavesCurrentBlobUntouched(t *testing.T) {
 	}
 }
 
-// The whole point of versioning: a blob written by a NEWER build (a public
-// release this one hasn't caught up to) must be refused, not silently
-// downgraded by a writer that doesn't understand its shape.
 func TestUpgradeBlobRefusesFutureVersion(t *testing.T) {
 	_, _, err := okr.UpgradeBlob([]byte(`{"schemaVersion":99,"quarters":[]}`))
 	if err == nil {

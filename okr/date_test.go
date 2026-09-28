@@ -19,8 +19,6 @@ func TestDateRoundTripsThroughItsISOForm(t *testing.T) {
 	}
 }
 
-// Most dates on a node are genuinely unset, so absence is a value
-// rather than an error — and it has to serialize back to absence.
 func TestUnsetDateIsNotAnError(t *testing.T) {
 	d, err := okr.ParseDate("")
 	if err != nil {
@@ -49,9 +47,6 @@ func TestDateRejectsWhatIsNotADate(t *testing.T) {
 	}
 }
 
-// time.Date silently normalises month 13 into next January. A
-// constructor that accepted that would turn a typo into a plausible
-// wrong answer.
 func TestNewDateRefusesToNormaliseNonsense(t *testing.T) {
 	if _, err := okr.NewDate(2027, time.Month(13), 1); err == nil {
 		t.Error("month 13 should be rejected, not rolled into next year")

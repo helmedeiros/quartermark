@@ -24,8 +24,6 @@ func TestStatusForReadsTheTaggedStatus(t *testing.T) {
 	}
 }
 
-// Tagging must not hide what the error actually is — a handler still
-// needs errors.Is to work on the sentinel underneath.
 func TestWithStatusKeepsTheErrorIdentityAndMessage(t *testing.T) {
 	tagged := httpx.WithStatus(fmt.Errorf("context: %w", errUnderlying), http.StatusConflict)
 	if !errors.Is(tagged, errUnderlying) {
@@ -36,7 +34,6 @@ func TestWithStatusKeepsTheErrorIdentityAndMessage(t *testing.T) {
 	}
 }
 
-// Found through a status tag several layers down.
 func TestStatusForFindsATagBeneathFurtherWrapping(t *testing.T) {
 	tagged := fmt.Errorf("while saving: %w", httpx.WithStatus(errUnderlying, http.StatusConflict))
 	if got := httpx.StatusFor(tagged, http.StatusInternalServerError); got != http.StatusConflict {

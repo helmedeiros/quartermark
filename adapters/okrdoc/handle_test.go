@@ -57,8 +57,6 @@ func TestDomainReadsTheDocumentAsTypedObjects(t *testing.T) {
 	}
 }
 
-// Strict on the way in, so a value outside the vocabulary is an error
-// here rather than an undefined lookup in a chart three layers up.
 func TestDomainRejectsValuesOutsideTheVocabulary(t *testing.T) {
 	for _, tc := range []struct{ name, doc string }{
 		{"status", `{"quarters":[{"quarterId":"q","objectives":[
@@ -80,9 +78,6 @@ func TestDomainRejectsValuesOutsideTheVocabulary(t *testing.T) {
 	}
 }
 
-// The whole point of Apply: reading and writing back without changing
-// anything must leave the document exactly as it was, including the
-// parts the domain has never heard of.
 func TestApplyingAnUnchangedDomainLeavesTheDocumentAlone(t *testing.T) {
 	raw := []byte(`{
       "schemaVersion": 1, "team": "Atlas",
@@ -137,7 +132,6 @@ func TestApplyWritesDomainChangesAndNothingElse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Change one leaf, deep in the tree.
 	team.Quarters[0].Objectives[0].Children[0].Status = okr.Done
 	team.Quarters[0].Objectives[0].Children[0].Progress, _ = okr.NewProgress(100)
 
@@ -167,9 +161,6 @@ func TestApplyWritesDomainChangesAndNothingElse(t *testing.T) {
 	}
 }
 
-// Apply exists to save edits to a plan that exists. Inventing a node
-// the document does not have would hide a bug in whatever produced the
-// domain object.
 func TestApplyRefusesANodeTheDocumentDoesNotHave(t *testing.T) {
 	d := parse(t, []byte(`{"quarters":[{"quarterId":"2027-q1","objectives":[]}]}`))
 
@@ -192,8 +183,6 @@ func TestApplyRefusesAQuarterTheDocumentDoesNotHave(t *testing.T) {
 	}
 }
 
-// The documents that exist, read all the way into the domain and
-// written back.
 func TestTheRealDocumentsSurviveAFullDomainRoundTrip(t *testing.T) {
 	paths := []string{filepath.Join("..", "..", "demo", "okrs.json")}
 	if p := os.Getenv("QUARTERMARK_DOC"); p != "" {

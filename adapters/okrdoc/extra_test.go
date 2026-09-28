@@ -68,8 +68,6 @@ func TestRoundTripRestoresUnknownMembers(t *testing.T) {
 	}
 }
 
-// If the domain learns a field that was previously unknown, the
-// domain's value is the live one and the carried copy is stale.
 func TestAKnownFieldWinsOverACarriedOne(t *testing.T) {
 	out, err := mergeExtras(
 		sample{Name: "current"},

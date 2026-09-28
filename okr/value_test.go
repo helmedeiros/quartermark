@@ -8,9 +8,6 @@ import (
 )
 
 func TestParsingRejectsWhatIsNotInTheVocabulary(t *testing.T) {
-	// The values that reached here as strings and caused trouble: a
-	// plausible-looking status that is not one, and metric types from a
-	// neighbouring vocabulary.
 	for _, tc := range []struct {
 		name  string
 		parse func(string) error
@@ -63,8 +60,6 @@ func TestParsingRejectsWhatIsNotInTheVocabulary(t *testing.T) {
 	}
 }
 
-// The error has to name the offending value: "not a status" sends you
-// looking through a document, "\"in_progress\" is not a status" does not.
 func TestParseErrorNamesTheValue(t *testing.T) {
 	_, err := okr.ParseStatus("in_progress")
 	if err == nil {
@@ -88,12 +83,6 @@ func TestProgressIsBoundedToAPercentage(t *testing.T) {
 	}
 }
 
-// An objective holds anything — sub-objectives break up a large bet,
-// and a milestone hangs directly off one when the work has no
-// measurable key result. A milestone is a leaf.
-//
-// Written from the shape real plans actually have: an earlier, tidier
-// rule rejected a live document.
 func TestTheTreeShapeMatchesWhatPlansActuallyDo(t *testing.T) {
 	allowed := map[okr.NodeType][]okr.NodeType{
 		okr.Objective: {okr.Objective, okr.KeyResult, okr.Milestone},

@@ -45,8 +45,6 @@ func TestLoadDemoPopulatesAnEmptyDatabase(t *testing.T) {
 	}
 }
 
-// The demo has to be worth looking at: a single empty quarter would
-// technically load and show nothing worth seeing.
 func TestDemoDataIsSubstantialEnoughToDemonstrateTheApp(t *testing.T) {
 	var doc struct {
 		Quarters []struct {
@@ -79,8 +77,6 @@ func TestDemoDataIsSubstantialEnoughToDemonstrateTheApp(t *testing.T) {
 			}
 		}
 	}
-	// A closed quarter renders differently; without one, the demo never
-	// shows that state.
 	if locked == 0 {
 		t.Fatal("no locked quarter: the closed-quarter view is never demonstrated")
 	}
@@ -90,7 +86,6 @@ func TestDemoDataIsSubstantialEnoughToDemonstrateTheApp(t *testing.T) {
 	}
 }
 
-// Passing -demo at the wrong moment must not overwrite real quarters.
 func TestLoadDemoRefusesADatabaseThatAlreadyHasTeams(t *testing.T) {
 	s, ctx := store(t), context.Background()
 	if err := s.CreateTeam(ctx, org.Team{Slug: "real", Name: "Real"}); err != nil {

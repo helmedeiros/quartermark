@@ -66,8 +66,6 @@ func TestLoadReportsAbsenceRatherThanAnError(t *testing.T) {
 	}
 }
 
-// The reason Save reads before it writes: the document holds things the
-// model does not, and writing from scratch would drop them.
 func TestSaveKeepsWhatTheModelDoesNotDescribe(t *testing.T) {
 	s, ctx := planStore(t), context.Background()
 	if err := s.PutTeamBlob(ctx, "atlas", "okrs", []byte(storedPlan)); err != nil {
@@ -103,8 +101,6 @@ func TestSaveKeepsWhatTheModelDoesNotDescribe(t *testing.T) {
 	}
 }
 
-// An invalid plan must not reach storage, or the next read fails and
-// the team cannot open their own quarter.
 func TestSaveRefusesAnInvalidPlan(t *testing.T) {
 	s, ctx := planStore(t), context.Background()
 	if err := s.PutTeamBlob(ctx, "atlas", "okrs", []byte(storedPlan)); err != nil {
@@ -115,8 +111,6 @@ func TestSaveRefusesAnInvalidPlan(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Two nodes with one id: an edit would land on whichever is found
-	// first.
 	plan.Quarters[0].Objectives[0].Children[0].ID = "O-1"
 
 	if err := s.Save(ctx, "atlas", plan); err == nil {

@@ -37,8 +37,6 @@ func TestQuarterRejectsAnEndBeforeItsStart(t *testing.T) {
 }
 
 func TestQuarterAllowsDatesToBeUnset(t *testing.T) {
-	// A quarter being sketched has no dates yet, and that is a normal
-	// state rather than an invalid one.
 	if err := quarter(t, "2027-q2").Validate(); err != nil {
 		t.Fatalf("a quarter with no dates should validate: %v", err)
 	}
@@ -56,9 +54,6 @@ func TestQuarterRejectsANonObjectiveAtTheTopLevel(t *testing.T) {
 	}
 }
 
-// A URL names a node without saying which objective it sits under, and
-// the tracker link map is keyed the same way — so uniqueness has to hold
-// across the whole quarter, not merely within one tree.
 func TestQuarterRejectsIdsReusedAcrossObjectives(t *testing.T) {
 	q := quarter(t, "2027-q1",
 		node(t, "O-1", okr.Objective, node(t, "KR-1", okr.KeyResult)),
@@ -104,8 +99,6 @@ func TestTeamOkrsRejectsDuplicateQuarters(t *testing.T) {
 	}
 }
 
-// Ids only have to be unique within a quarter: the same objective id
-// recurring in a later quarter is how a continuing bet is expressed.
 func TestTeamOkrsAllowsIdsToRecurAcrossQuarters(t *testing.T) {
 	team := okr.TeamOkrs{
 		Team: "Atlas",

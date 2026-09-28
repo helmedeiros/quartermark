@@ -18,9 +18,6 @@ import (
 	"github.com/helmedeiros/quartermark/timewindow"
 )
 
-// fakeStore is an in-memory okr.Store. The module is meant to run against
-// any implementation of its narrow port, so its own tests should not need
-// the application's SQLite one.
 type fakeStore struct {
 	teams map[string]org.Team
 	blobs map[string][]byte
@@ -240,8 +237,6 @@ func TestSettingsExposesTheJiraHostButNotTheToken(t *testing.T) {
 	if got.JiraBaseURL != "https://example.atlassian.net" {
 		t.Fatalf("jiraBaseUrl = %q", got.JiraBaseURL)
 	}
-	// The struct has no token field, so decoding cannot prove absence —
-	// check the wire bytes instead.
 	store.blobs[blobKey("acme", "connectors")] = []byte(
 		`{"jira":{"baseUrl":"https://example.atlassian.net","token":"secret-token"}}`)
 	raw := do(t, srv, http.MethodGet, "/teams/acme/okr-settings", "")
@@ -252,8 +247,6 @@ func TestSettingsExposesTheJiraHostButNotTheToken(t *testing.T) {
 	}
 }
 
-// A team with no Jira connector is a normal state, not a failure — but a
-// refresh it cannot perform must say so rather than pretend it worked.
 func TestJiraRoutesReportUnconfiguredRatherThanFailing(t *testing.T) {
 	srv := mount(t, newFakeStore(), noTracker{})
 
@@ -267,7 +260,6 @@ func TestJiraRoutesReportUnconfiguredRatherThanFailing(t *testing.T) {
 	}
 }
 
-// stubJira answers the two calls a quarter refresh makes.
 type stubJira struct{ issues map[string]jirasource.Issue }
 
 func (s stubJira) SearchIssuesByAssignee(context.Context, string, timewindow.Window) ([]jirasource.Issue, error) {
@@ -328,9 +320,6 @@ func TestJiraRefreshWritesProgressBackIntoTheBlob(t *testing.T) {
 	if !strings.Contains(stored, "jiraRefreshedAt") {
 		t.Fatalf("refresh timestamp was not persisted: %s", stored)
 	}
-	// Refreshing must also bring the blob up to the current schema —
-	// otherwise a live refresh could rewrite an unversioned blob and
-	// silently drop the anchor back to version 0.
 	if v := okr.BlobVersion(store.blobs[blobKey("acme", "okrs")]); v != okr.SchemaVersion {
 		t.Fatalf("version after refresh = %d, want %d", v, okr.SchemaVersion)
 	}

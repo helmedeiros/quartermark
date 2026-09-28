@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// requireSameDocument compares meaning, not bytes: key order and
-// whitespace are the serializer's business, but no member may appear,
-// vanish or change.
 func requireSameDocument(t *testing.T, want, got []byte) {
 	t.Helper()
 	var w, g any
@@ -72,9 +69,6 @@ func TestRoundTripPreservesAModelledDocument(t *testing.T) {
 	requireSameDocument(t, raw, roundTrip(t, raw))
 }
 
-// The guarantee this package exists for: a frontend ahead of the
-// backend writes members Go has never heard of, and they come back out
-// intact rather than being dropped on the next save.
 func TestRoundTripPreservesMembersTheDomainDoesNotModel(t *testing.T) {
 	raw := []byte(`{
       "schemaVersion": 1,
@@ -99,8 +93,6 @@ func TestRoundTripPreservesMembersTheDomainDoesNotModel(t *testing.T) {
 	requireSameDocument(t, raw, roundTrip(t, raw))
 }
 
-// Absent is not zero. An effortWeeks the planner never set must not
-// come back as 0, which the timeline would draw as a real estimate.
 func TestRoundTripKeepsAbsentFieldsAbsent(t *testing.T) {
 	raw := []byte(`{
       "quarters": [{
@@ -127,8 +119,6 @@ func TestRoundTripKeepsAbsentFieldsAbsent(t *testing.T) {
 	}
 }
 
-// A zero the planner did set must survive as zero, which is the other
-// half of the same distinction.
 func TestRoundTripKeepsExplicitZeroes(t *testing.T) {
 	raw := []byte(`{
       "quarters": [{
@@ -144,7 +134,6 @@ func TestRoundTripKeepsExplicitZeroes(t *testing.T) {
 	requireSameDocument(t, raw, roundTrip(t, raw))
 }
 
-// The documents that actually exist, rather than ones written to pass.
 func TestRoundTripPreservesTheRealDocuments(t *testing.T) {
 	for _, path := range []string{
 		filepath.Join("..", "..", "demo", "okrs.json"),
@@ -160,13 +149,6 @@ func TestRoundTripPreservesTheRealDocuments(t *testing.T) {
 	}
 }
 
-// Point this at your own document to check it survives before
-// trusting the server with it:
-//
-//	QUARTERMARK_DOC=/path/to/okrs.json go test ./adapters/okrdoc/
-//
-// Useful for a document this repository cannot contain — a real team's
-// quarters, which is exactly the one worth being sure about.
 func TestRoundTripPreservesADocumentGivenByTheOperator(t *testing.T) {
 	path := os.Getenv("QUARTERMARK_DOC")
 	if path == "" {

@@ -32,8 +32,6 @@ func TestOpenIsIdempotentOnAnExistingDatabase(t *testing.T) {
 	}
 	_ = first.Close()
 
-	// The schema is re-applied on every boot, so reopening must not wipe
-	// or fail on tables that already exist.
 	second, err := sqlite.Open(path)
 	if err != nil {
 		t.Fatalf("reopen: %v", err)
@@ -66,8 +64,6 @@ func TestTeamRegistryRoundTrip(t *testing.T) {
 	}
 }
 
-// Empty means [], never nil: the fresh-install case is the one every
-// client forgets to handle, so it must not need handling.
 func TestListTeamsIsEmptyNotNil(t *testing.T) {
 	teams, err := open(t).ListTeams(context.Background())
 	if err != nil {
@@ -123,8 +119,6 @@ func TestBlobRoundTripAndOverwrite(t *testing.T) {
 	}
 }
 
-// Blobs are keyed by (team, section): two teams must not share one, and
-// neither must two sections of the same team.
 func TestBlobsAreScopedByTeamAndSection(t *testing.T) {
 	store, ctx := open(t), context.Background()
 
