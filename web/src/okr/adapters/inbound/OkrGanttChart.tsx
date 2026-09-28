@@ -1,19 +1,19 @@
 import { Fragment, useRef, useState } from "react";
-import type { DateWindow, Granularity } from "../../lib/dateWindow";
+import type { DateWindow, Granularity } from "../../../lib/dateWindow";
 import {
   dayTicks,
   isoWeekNumber,
   monthSpans,
   weekSpans,
-} from "../../lib/ganttLayout";
+} from "../../../lib/ganttLayout";
 import {
   statusMeta,
   weeklyCapacity,
   type ObjectiveGanttGroup,
   type OkrGanttBar,
   type SprintGanttBar,
-} from "../domain/tree";
-import type { Quarter } from "../domain/model";
+} from "../../domain/tree";
+import type { Quarter } from "../../domain/model";
 
 const ROW_HEIGHT_OBJECTIVE = 28;
 const ROW_HEIGHT_MILESTONE = 46;

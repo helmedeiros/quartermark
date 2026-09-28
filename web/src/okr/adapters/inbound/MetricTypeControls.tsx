@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { METRIC_TYPE_META } from "../domain/tree";
-import type { OkrMetricType } from "../domain/model";
+import { METRIC_TYPE_META } from "../../domain/tree";
+import type { OkrMetricType } from "../../domain/model";
 
 const METRIC_TYPE_ICON: Record<
   OkrMetricType,

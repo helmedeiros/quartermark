@@ -1,10 +1,10 @@
 import type { SectionDefinition } from "../sections";
-import { ClusterDetailPage } from "./components/ClusterDetailPage";
-import { OkrDetailPage } from "./components/OkrDetailPage";
-import { OkrsLanding } from "./components/OkrsLanding";
-import { OkrsSidebar } from "./components/OkrsSidebar";
-import { QuarterDetailPage } from "./components/QuarterDetailPage";
-import { QuarterGanttPage } from "./components/QuarterGanttPage";
+import { ClusterDetailPage } from "./adapters/inbound/ClusterDetailPage";
+import { OkrDetailPage } from "./adapters/inbound/OkrDetailPage";
+import { OkrsLanding } from "./adapters/inbound/OkrsLanding";
+import { OkrsSidebar } from "./adapters/inbound/OkrsSidebar";
+import { QuarterDetailPage } from "./adapters/inbound/QuarterDetailPage";
+import { QuarterGanttPage } from "./adapters/inbound/QuarterGanttPage";
 
 export const okrSection: SectionDefinition = {
   id: "okrs",

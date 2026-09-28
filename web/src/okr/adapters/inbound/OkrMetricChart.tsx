@@ -1,6 +1,6 @@
-import { formatMetricValue } from "../domain/tree";
-import { linearScale } from "../../lib/scale";
-import type { OkrMetricPoint, OkrMetricType } from "../domain/model";
+import { formatMetricValue } from "../../domain/tree";
+import { linearScale } from "../../../lib/scale";
+import type { OkrMetricPoint, OkrMetricType } from "../../domain/model";
 
 const METRIC_COLOR = "#f97316";
 

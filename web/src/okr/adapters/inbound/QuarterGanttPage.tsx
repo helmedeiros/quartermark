@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useTeamBlob } from "../../api/useTeamBlob";
+import { useTeamBlob } from "../../../api/useTeamBlob";
 import {
   padByWholeMonths,
   type DateWindow,
   type Granularity,
-} from "../../lib/dateWindow";
-import { objectiveGanttGroups, sprintGanttBars } from "../domain/tree";
+} from "../../../lib/dateWindow";
+import { objectiveGanttGroups, sprintGanttBars } from "../../domain/tree";
 import { OkrGanttChart } from "./OkrGanttChart";
-import type { TeamOkrsData } from "../domain/model";
-import { useOkrTreeMutations } from "./useOkrTreeMutations";
-import { queryStateMessage } from "../../components/queryStateMessage";
+import type { TeamOkrsData } from "../../domain/model";
+import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { queryStateMessage } from "../../../components/queryStateMessage";
 
 type GanttGranularity = Extract<Granularity, "day" | "week">;
 

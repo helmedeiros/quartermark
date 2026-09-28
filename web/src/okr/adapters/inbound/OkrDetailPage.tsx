@@ -1,15 +1,15 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { useTeamBlob } from "../../api/useTeamBlob";
-import { initials } from "../../lib/format";
-import { yearWeekRangeLabel } from "../../lib/ganttLayout";
-import { jiraTicketUrl } from "../adapters/outbound/jira";
-import { markdownToHtml } from "../../lib/markdown";
+import { useTeamBlob } from "../../../api/useTeamBlob";
+import { initials } from "../../../lib/format";
+import { yearWeekRangeLabel } from "../../../lib/ganttLayout";
+import { jiraTicketUrl } from "../outbound/jira";
+import { markdownToHtml } from "../../../lib/markdown";
 import {
   applyMarkdownAction,
   MARKDOWN_TOOLBAR,
   type MarkdownAction,
-} from "../../lib/markdownEditor";
+} from "../../../lib/markdownEditor";
 import {
   collectLabels,
   collectOwners,
@@ -31,10 +31,10 @@ import {
   STATUS_META,
   statusMeta,
   TYPE_META,
-} from "../domain/tree";
-import { Sparkline } from "../../components/Sparkline";
+} from "../../domain/tree";
+import { Sparkline } from "../../../components/Sparkline";
 import { ClusterChip } from "./ClusterChip";
-import { useClusters } from "../useClusters";
+import { useClusters } from "../../useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
@@ -49,11 +49,11 @@ import type {
   OkrStatus,
   Quarter,
   TeamOkrsData,
-} from "../domain/model";
-import { useOkrTreeMutations } from "./useOkrTreeMutations";
-import { useJiraBaseUrl } from "../../api/useOkrSettings";
-import { useCurrentTeamSlug } from "../../useCurrentTeamSlug";
-import { queryStateMessage } from "../../components/queryStateMessage";
+} from "../../domain/model";
+import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useJiraBaseUrl } from "../../../api/useOkrSettings";
+import { useCurrentTeamSlug } from "../../../useCurrentTeamSlug";
+import { queryStateMessage } from "../../../components/queryStateMessage";
 
 function MarkdownTextarea({
   value,

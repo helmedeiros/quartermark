@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { OkrCreatePanel } from "./OkrCreatePanel";
-import type { OkrNodeType } from "../domain/model";
+import type { OkrNodeType } from "../../domain/model";
 
 function renderPanel(allowedTypes: OkrNodeType[]) {
   const onCreate = vi.fn();

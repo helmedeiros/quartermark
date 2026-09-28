@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
-import { useTeamBlob } from "../../api/useTeamBlob";
-import { countNodes, NON_CLUSTER, objectiveAvgProgress } from "../domain/tree";
-import { useClusters } from "../useClusters";
-import { QueryState } from "../../components/QueryState";
+import { useTeamBlob } from "../../../api/useTeamBlob";
+import {
+  countNodes,
+  NON_CLUSTER,
+  objectiveAvgProgress,
+} from "../../domain/tree";
+import { useClusters } from "../../useClusters";
+import { QueryState } from "../../../components/QueryState";
 import { ClusterChip } from "./ClusterChip";
-import type { TeamOkrsData } from "../domain/model";
+import type { TeamOkrsData } from "../../domain/model";
 
 export function OkrsLanding({ teamSlug }: { teamSlug: string }) {
   const clusters = useClusters(teamSlug);

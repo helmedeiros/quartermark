@@ -3,7 +3,7 @@ import {
   MetricTypePicker,
   MetricValueInput,
 } from "./MetricTypeControls";
-import type { OkrMetricType } from "../domain/model";
+import type { OkrMetricType } from "../../domain/model";
 
 export function MetricFieldsBlock({
   metricType,

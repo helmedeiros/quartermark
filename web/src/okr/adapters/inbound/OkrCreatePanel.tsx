@@ -7,9 +7,9 @@ import {
   TYPE_BADGE_CLASS,
   TYPE_META,
   type Cluster,
-} from "../domain/tree";
+} from "../../domain/tree";
 import { MetricFieldsBlock } from "./MetricFieldsBlock";
-import type { OkrMetricType, OkrNodeType } from "../domain/model";
+import type { OkrMetricType, OkrNodeType } from "../../domain/model";
 
 export interface OkrCreateFields {
   title: string;

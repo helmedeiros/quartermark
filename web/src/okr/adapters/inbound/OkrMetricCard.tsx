@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api } from "../../api/client";
+import { api } from "../../../api/client";
 import {
   currentNumberFor,
   deriveMetricProgress,
@@ -8,10 +8,10 @@ import {
   hasContributingChildren,
   targetNumberFor,
   updateNode,
-} from "../domain/tree";
+} from "../../domain/tree";
 import { MetricFieldsBlock } from "./MetricFieldsBlock";
 import { OkrMetricChart } from "./OkrMetricChart";
-import type { OkrMetricType, OkrNode, TeamOkrsData } from "../domain/model";
+import type { OkrMetricType, OkrNode, TeamOkrsData } from "../../domain/model";
 
 function defaultMetricType(node: OkrNode): OkrMetricType {
   if (node.metricType) return node.metricType;

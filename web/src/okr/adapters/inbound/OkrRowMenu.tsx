@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { allowedChildTypesFor, TYPE_META } from "../domain/tree";
-import type { OkrNode, OkrNodeType } from "../domain/model";
+import { allowedChildTypesFor, TYPE_META } from "../../domain/tree";
+import type { OkrNode, OkrNodeType } from "../../domain/model";
 
 export function OkrRowMenu({
   node,

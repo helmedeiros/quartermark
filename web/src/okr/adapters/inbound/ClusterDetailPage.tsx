@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useTeamBlob } from "../../api/useTeamBlob";
-import { resolveCluster, type Cluster } from "../domain/tree";
+import { useTeamBlob } from "../../../api/useTeamBlob";
+import { resolveCluster, type Cluster } from "../../domain/tree";
 import { ClusterChip } from "./ClusterChip";
 import { OkrTreeTable } from "./OkrTreeTable";
-import type { TeamOkrsData } from "../domain/model";
-import { queryStateMessage } from "../../components/queryStateMessage";
+import type { TeamOkrsData } from "../../domain/model";
+import { queryStateMessage } from "../../../components/queryStateMessage";
 
 export function ClusterDetailPage({ teamSlug }: { teamSlug: string }) {
   const { cluster: clusterParam } = useParams<{ cluster: string }>();

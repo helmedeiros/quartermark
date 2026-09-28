@@ -22,17 +22,17 @@ import {
   statusMeta,
   TYPE_BADGE_CLASS,
   TYPE_META,
-} from "../domain/tree";
+} from "../../domain/tree";
 import {
   initialColumnWidths,
   OKR_COLUMNS,
   resizeColumn,
   type OkrColumnKey,
-} from "../okrTableColumns";
-import { formatRelativeTime, initials } from "../../lib/format";
-import { jiraTicketUrl } from "../adapters/outbound/jira";
+} from "./okrTableColumns";
+import { formatRelativeTime, initials } from "../../../lib/format";
+import { jiraTicketUrl } from "../outbound/jira";
 import { ClusterChip } from "./ClusterChip";
-import { useClusters } from "../useClusters";
+import { useClusters } from "../../useClusters";
 import { JiraTypeBadge } from "./JiraTypeBadge";
 import { OkrLinkJiraPanel } from "./OkrLinkJiraPanel";
 import { OkrRowMenu } from "./OkrRowMenu";
@@ -42,9 +42,9 @@ import type {
   OkrNodeType,
   OkrStatus,
   TeamOkrsData,
-} from "../domain/model";
-import { useOkrTreeMutations } from "./useOkrTreeMutations";
-import { useJiraBaseUrl } from "../../api/useOkrSettings";
+} from "../../domain/model";
+import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useJiraBaseUrl } from "../../../api/useOkrSettings";
 
 const COLUMN_LABELS: Record<OkrColumnKey, string> = {
   title: "OKR",

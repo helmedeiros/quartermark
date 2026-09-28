@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { api } from "../../api/client";
-import { useTeamBlob } from "../../api/useTeamBlob";
-import { formatRelativeTime } from "../../lib/format";
-import { useOkrConfig } from "../config";
-import { downloadWorkbook } from "../adapters/outbound/okrExportWorkbook";
-import { collectLabels, collectOwners } from "../domain/tree";
+import { api } from "../../../api/client";
+import { useTeamBlob } from "../../../api/useTeamBlob";
+import { formatRelativeTime } from "../../../lib/format";
+import { useOkrConfig } from "../../config";
+import { downloadWorkbook } from "../outbound/okrExportWorkbook";
+import { collectLabels, collectOwners } from "../../domain/tree";
 import { OkrCreatePanel } from "./OkrCreatePanel";
 import { OkrQuarterSummary } from "./OkrQuarterSummary";
 import { OkrTreeTable } from "./OkrTreeTable";
-import type { OkrNodeType, Quarter, TeamOkrsData } from "../domain/model";
-import { useOkrTreeMutations } from "./useOkrTreeMutations";
-import { useClusters } from "../useClusters";
-import { useJiraBaseUrl } from "../../api/useOkrSettings";
-import { queryStateMessage } from "../../components/queryStateMessage";
+import type { OkrNodeType, Quarter, TeamOkrsData } from "../../domain/model";
+import { useOkrTreeMutations } from "../../components/useOkrTreeMutations";
+import { useClusters } from "../../useClusters";
+import { useJiraBaseUrl } from "../../../api/useOkrSettings";
+import { queryStateMessage } from "../../../components/queryStateMessage";
 
 function jiraSyncStatusLabel(quarter: Quarter): string | null {
   if (!quarter.jiraRefreshedAt) return null;
