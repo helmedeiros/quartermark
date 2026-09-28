@@ -10,9 +10,12 @@ import (
 	"os"
 
 	"github.com/helmedeiros/quartermark/adapters/connectors"
+	"github.com/helmedeiros/quartermark/adapters/jira"
 	"github.com/helmedeiros/quartermark/adapters/okrapi"
 	"github.com/helmedeiros/quartermark/adapters/sqlite"
 	"github.com/helmedeiros/quartermark/app"
+	"github.com/helmedeiros/quartermark/jirasource"
+	"github.com/helmedeiros/quartermark/org"
 )
 
 const (
@@ -45,7 +48,7 @@ func run(addr, dbPath string, demo bool) error {
 	}
 
 	mux := http.NewServeMux()
-	resolver := connectors.New(store)
+	resolver := connectors.New(store, newTrackerClient)
 	okrapi.Mount(mux, app.New(store, store, store, resolver))
 
 	log.Printf("quartermark listening on http://%s (database: %s)", addr, dbPath)
@@ -56,6 +59,10 @@ func run(addr, dbPath string, demo bool) error {
 		return err
 	}
 	return nil
+}
+
+func newTrackerClient(config org.JiraConfig) jirasource.Source {
+	return jira.IngestAdapter{Client: jira.NewClient(config.BaseURL, config.Email, config.Token)}
 }
 
 func envOr(key, fallback string) string {

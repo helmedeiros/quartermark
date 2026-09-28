@@ -5,29 +5,43 @@ import (
 	"encoding/json"
 	"fmt"
 
-	jiraadapter "github.com/helmedeiros/quartermark/adapters/jira"
 	"github.com/helmedeiros/quartermark/jirasource"
-	"github.com/helmedeiros/quartermark/okr"
 	"github.com/helmedeiros/quartermark/org"
 )
 
 const connectorsSection = "connectors"
 
-type Resolver struct{ store okr.Store }
+type BuildTracker func(config org.JiraConfig) jirasource.Source
 
-func New(store okr.Store) *Resolver { return &Resolver{store: store} }
+type Resolver struct {
+	sections Sections
+	build    BuildTracker
+}
 
-func (r *Resolver) Jira(ctx context.Context, teamSlug string) (jirasource.Source, error) {
-	raw, ok, err := r.store.GetTeamBlob(ctx, teamSlug, connectorsSection)
+type Sections interface {
+	GetSection(ctx context.Context, teamSlug, section string) ([]byte, bool, error)
+}
+
+func New(sections Sections, build BuildTracker) *Resolver {
+	return &Resolver{sections: sections, build: build}
+}
+
+func (r *Resolver) For(ctx context.Context, teamSlug string) (jirasource.Source, error) {
+	raw, ok, err := r.sections.GetSection(ctx, teamSlug, connectorsSection)
 	if err != nil || !ok {
 		return nil, err
 	}
-	var cfg org.Connectors
-	if err := json.Unmarshal(raw, &cfg); err != nil {
+
+	var config org.Connectors
+	if err := json.Unmarshal(raw, &config); err != nil {
 		return nil, fmt.Errorf("parse connector config for %s: %w", teamSlug, err)
 	}
-	if cfg.Jira == nil || cfg.Jira.BaseURL == "" || cfg.Jira.Token == "" {
+	if !configuredForTracking(config.Jira) {
 		return nil, nil
 	}
-	return jiraadapter.IngestAdapter{Client: jiraadapter.NewClient(cfg.Jira.BaseURL, cfg.Jira.Email, cfg.Jira.Token)}, nil
+	return r.build(*config.Jira), nil
+}
+
+func configuredForTracking(config *org.JiraConfig) bool {
+	return config != nil && config.BaseURL != "" && config.Token != ""
 }
