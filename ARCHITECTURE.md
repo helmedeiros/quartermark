@@ -72,7 +72,13 @@ web/src/okr/          the frontend module: one importable unit, one export.
 web/src/              the shell around it — routing, first run, registry.
 ```
 
-The frontend module is laid out as the same hexagon:
+The frontend module is laid out as the same hexagon, with one wrinkle: it
+says `inbound`/`outbound` where the Go side still says `driving`/`driven`.
+Those are the same distinction — who calls whom — and the Go side will be
+renamed to match on the next change that breaks its import paths, rather
+than cutting a release for a synonym.
+
+The layout:
 
 ```
 web/src/okr/
