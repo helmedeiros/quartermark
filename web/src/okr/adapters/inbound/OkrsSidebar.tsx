@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { useTeamBlob } from "../../../api/useTeamBlob";
+import { SidebarNavLink } from "../../../components/SidebarNavLink";
+import { SidebarShell } from "../../../components/SidebarShell";
 import type { TeamOkrsData } from "../../domain/model";
 
 const COLLAPSED_KEY = "okrsSidebarCollapsed";
@@ -54,39 +55,21 @@ export function OkrsSidebar({ teamSlug }: { teamSlug: string }) {
     return <aside className="sidebar">{toggleButton}</aside>;
   }
 
-  if (isLoading)
-    return (
-      <aside className="sidebar">
-        {toggleButton}
-        Loading…
-      </aside>
-    );
-  if (error)
-    return (
-      <aside className="sidebar">
-        {toggleButton}
-        Failed to load OKRs: {String(error)}
-      </aside>
-    );
-
   return (
-    <aside className="sidebar">
-      {toggleButton}
+    <SidebarShell
+      isLoading={isLoading}
+      error={error}
+      label="OKRs"
+      before={toggleButton}
+    >
       {data?.quarters.map((q) => (
-        <NavLink
+        <SidebarNavLink
           key={q.quarterId}
           to={`/t/${teamSlug}/okrs/${q.quarterId}`}
-          className={({ isActive }) => `eng-card${isActive ? " active" : ""}`}
-        >
-          <div>
-            <div className="name">{q.label}</div>
-            <div className="role">
-              {q.objectives.length} objective
-              {q.objectives.length === 1 ? "" : "s"}
-            </div>
-          </div>
-        </NavLink>
+          name={q.label}
+          detail={`${q.objectives.length} objective${q.objectives.length === 1 ? "" : "s"}`}
+        />
       ))}
-    </aside>
+    </SidebarShell>
   );
 }

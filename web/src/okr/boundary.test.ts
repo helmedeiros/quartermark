@@ -49,6 +49,8 @@ describe("the OKR module's import boundary", () => {
       "lib/scale",
       "components/QueryState",
       "components/queryStateMessage",
+      "components/SidebarShell",
+      "components/SidebarNavLink",
       "components/Sparkline",
       "sections",
       "useCurrentTeamSlug",
