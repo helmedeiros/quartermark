@@ -51,13 +51,13 @@ app/                  the use cases. One Service, one method per thing a
                       caller can ask for, and the two ports it needs that the
                       domain does not: Documents and Tracker.
 
-adapters/driving/okrapi/      HTTP routes, mountable onto a mux you own.
-adapters/driven/jira/         HTTP client implementing tracker.Source.
-adapters/driven/sqlite/       reference Repository and Documents. Two tables.
-adapters/driven/okrdoc/       the JSON document: decode to domain, apply a
+adapters/inbound/okrapi/      HTTP routes, mountable onto a mux you own.
+adapters/outbound/jira/         HTTP client implementing tracker.Source.
+adapters/outbound/sqlite/       reference Repository and Documents. Two tables.
+adapters/outbound/okrdoc/       the JSON document: decode to domain, apply a
                               changed domain back, preserve everything the
                               domain does not model.
-adapters/driven/connectors/   resolves a team's tracker per request, and the
+adapters/outbound/connectors/   resolves a team's tracker per request, and the
                               configuration record that describes one.
 
 shared/httpx/         JSON response plumbing, and a way for an error to carry
@@ -72,13 +72,7 @@ web/src/okr/          the frontend module: one importable unit, one export.
 web/src/              the shell around it — routing, first run, registry.
 ```
 
-The frontend module is laid out as the same hexagon, with one wrinkle: it
-says `inbound`/`outbound` where the Go side still says `driving`/`driven`.
-Those are the same distinction — who calls whom — and the Go side will be
-renamed to match on the next change that breaks its import paths, rather
-than cutting a release for a synonym.
-
-The layout:
+The frontend module is laid out as the same hexagon:
 
 ```
 web/src/okr/
@@ -103,9 +97,9 @@ enforces for Go, by resolving each relative import against the filesystem.
 
 `okr` and `app` sit at the root because they are the hexagon and its use
 cases; everything else is named by its relation to them. Adapters are grouped
-by which way control flows — `driving` is called by the outside world,
-`driven` is called by the application through a port — because that is the
-distinction the word "adapter" alone hides. `shared` holds what belongs to
+by which way control flows — `inbound` is called by the outside world,
+`outbound` is called by the application through a port — because that is
+the distinction the word "adapter" alone hides. `shared` holds what belongs to
 neither side.
 
 There is no `internal/`, which is where a Go application would usually put
@@ -173,7 +167,7 @@ by someone adding a field to the record.
 
 ## Testing
 
-- Go: unit tests per package; `adapters/driving/okrapi` drives `Mount` on a bare mux
+- Go: unit tests per package; `adapters/inbound/okrapi` drives `Mount` on a bare mux
   against an in-memory store and a stub Jira, which is also the proof that
   the narrow port is sufficient — nothing in those tests needs SQLite.
 - Frontend: component and pure-function tests, plus the two boundary tests.

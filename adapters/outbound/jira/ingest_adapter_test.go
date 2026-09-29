@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/helmedeiros/quartermark/adapters/driven/jira"
+	"github.com/helmedeiros/quartermark/adapters/outbound/jira"
 	"github.com/helmedeiros/quartermark/okr/tracker"
 	"github.com/helmedeiros/quartermark/shared/timewindow"
 )

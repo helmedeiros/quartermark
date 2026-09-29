@@ -15,7 +15,7 @@ var layers = map[string][]string{
 	"shared/httpx":      {},
 	"app": {
 		"okr", "okr/tracker", "shared/timewindow",
-		"adapters/driven/okrdoc",
+		"adapters/outbound/okrdoc",
 	},
 }
 
@@ -68,16 +68,16 @@ func TestTheDomainReachesNoAdapter(t *testing.T) {
 
 func TestTheApplicationReachesNoTransport(t *testing.T) {
 	for _, dep := range dependenciesOf(t, "app") {
-		if strings.HasPrefix(dep, "adapters/driving/okrapi") || strings.HasPrefix(dep, "cmd/") {
+		if strings.HasPrefix(dep, "adapters/inbound/okrapi") || strings.HasPrefix(dep, "cmd/") {
 			t.Errorf("app reaches its own caller through %s", dep)
 		}
 	}
 }
 
 func TestNoAdapterDependsOnAnother(t *testing.T) {
-	for _, adapter := range []string{"adapters/driven/sqlite", "adapters/driven/jira", "adapters/driven/connectors"} {
+	for _, adapter := range []string{"adapters/outbound/sqlite", "adapters/outbound/jira", "adapters/outbound/connectors"} {
 		for _, dep := range dependenciesOf(t, adapter) {
-			if strings.HasPrefix(dep, "adapters/") && dep != "adapters/driven/okrdoc" {
+			if strings.HasPrefix(dep, "adapters/") && dep != "adapters/outbound/okrdoc" {
 				t.Errorf("%s depends on another adapter, %s", adapter, dep)
 			}
 		}

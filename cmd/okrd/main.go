@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/helmedeiros/quartermark/adapters/driven/connectors"
-	"github.com/helmedeiros/quartermark/adapters/driven/jira"
-	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
-	"github.com/helmedeiros/quartermark/adapters/driving/okrapi"
+	"github.com/helmedeiros/quartermark/adapters/inbound/okrapi"
+	"github.com/helmedeiros/quartermark/adapters/outbound/connectors"
+	"github.com/helmedeiros/quartermark/adapters/outbound/jira"
+	"github.com/helmedeiros/quartermark/adapters/outbound/sqlite"
 	"github.com/helmedeiros/quartermark/app"
 	"github.com/helmedeiros/quartermark/okr/tracker"
 )

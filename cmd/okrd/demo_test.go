@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/helmedeiros/quartermark/adapters/driven/sqlite"
+	"github.com/helmedeiros/quartermark/adapters/outbound/sqlite"
 	"github.com/helmedeiros/quartermark/okr"
 )
 

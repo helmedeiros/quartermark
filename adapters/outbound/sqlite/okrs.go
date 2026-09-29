@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/helmedeiros/quartermark/adapters/driven/okrdoc"
+	"github.com/helmedeiros/quartermark/adapters/outbound/okrdoc"
 	"github.com/helmedeiros/quartermark/okr"
 )
 
