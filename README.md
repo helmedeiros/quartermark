@@ -8,6 +8,15 @@ result → milestone — on a quarter timeline, tells you when the plan needs mo
 engineers than you have, and reads progress back out of Jira so the number
 isn't something a human has to remember to type.
 
+![The Q1 2027 OKR tree expanding from objectives down to milestones and Jira issues](docs/demo/tree.gif)
+_Objective → key result → milestone, with Jira issues hanging off the leaves._
+
+![Setting team capacity on the quarter Gantt and watching the over-committed weeks shrink](docs/demo/capacity.gif)
+_Set the team's capacity and the over-committed weeks light up._
+
+![Opening a key result to see its progress history and the Jira syncs behind it](docs/demo/progress.gif)
+_A key result's progress history, including what Jira sync recorded and when._
+
 > **Status: early.** The Go API and the React frontend both run, and there
 > is a demo dataset to look at. It has not been packaged, versioned or
 > deployed anywhere yet.
