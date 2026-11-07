@@ -78,7 +78,7 @@ jobs:
         run: |
           go build -o okrd ./cmd/okrd
           QUARTERMARK_DB=ci.db ./okrd -demo -addr 127.0.0.1:8770 &
-          for i in $(seq 1 20); do
+          for _ in $(seq 1 20); do
             curl -sf http://127.0.0.1:8770/api/teams >/dev/null && break
             sleep 1
           done
